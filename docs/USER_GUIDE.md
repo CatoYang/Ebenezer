@@ -13,7 +13,8 @@ a record of answered prayers. It lives inside Telegram, so there's nothing to in
 3. Choose a **reminder time** that suits you. Check-ins and reminders arrive at this time.
 4. Choose whether you'd like a **daily reminder** to pray.
 
-That's it. Ebenezer works the same on your phone, tablet and computer, as long as it's the same
+Ebenezer then shows a short guide to its commands, with an **Open Ebenezer** button for the app; send
+`/help` to see it again. Ebenezer works the same on your phone, tablet and computer, as long as it's the same
 Telegram account.
 
 ## Adding something to pray for
@@ -83,6 +84,7 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 | `/app` | Open the app |
 | `/prayed` | Record that you prayed |
 | `/settings` | Reminder time, daily reminder, weekly summary |
+| `/help` | How to use Ebenezer (the guide you see after signing up) |
 | `/deletemydata` | Delete everything Ebenezer has stored about you |
 
 ## Your privacy

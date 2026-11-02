@@ -50,6 +50,7 @@ supabase/
     deno.json                  import map shared by all functions and scripts
     _shared/
       bot.ts                   createBot(): middleware order + command/callback routing
+      commands.ts              the command menu; every command must also be in the guide in messages.ts
       callbacks.ts             all inline-button callback data (encode/parse, 64-byte limit)
       keyboards.ts             all inline keyboards
       messages.ts              ALL user-facing wording

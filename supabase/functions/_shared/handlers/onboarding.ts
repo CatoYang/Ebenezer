@@ -2,9 +2,11 @@
 
 import type { Origin } from "../callbacks.ts";
 import { type BotContext, editFromButton, saveSettings, updateUser } from "../context.ts";
+import { MINIAPP_URL } from "../env.ts";
 import {
   consentKeyboard,
   nudgePrefKeyboard,
+  openAppKeyboard,
   settingsKeyboard,
   timeHoursKeyboard,
   timePresetsKeyboard,
@@ -20,8 +22,15 @@ export async function start(ctx: BotContext) {
   } else if (!ctx.user.reminder_time) {
     await ctx.reply(msg.askTime, { reply_markup: timePresetsKeyboard("onboarding") });
   } else {
-    await ctx.reply(msg.onboardingDone(ctx.user));
+    await ctx.reply(msg.welcomeBack(ctx.user, !!MINIAPP_URL), { reply_markup: appButton() });
   }
+}
+
+/** The "Open Ebenezer" button under the guide, when the app is published. */
+const appButton = () => (MINIAPP_URL ? openAppKeyboard(MINIAPP_URL) : undefined);
+
+export async function helpCommand(ctx: BotContext) {
+  await ctx.reply(msg.help(!!MINIAPP_URL), { reply_markup: appButton() });
 }
 
 export async function consent(ctx: BotContext, accept: boolean) {
@@ -56,7 +65,7 @@ export async function setTime(ctx: BotContext, origin: Origin, time: string) {
 export async function setNudges(ctx: BotContext, origin: Origin, enabled: boolean) {
   await saveSettings(ctx, { nudges_enabled: enabled });
   if (origin === "onboarding") {
-    await editFromButton(ctx, msg.onboardingDone(ctx.user));
+    await editFromButton(ctx, msg.onboardingDone(ctx.user, !!MINIAPP_URL), appButton());
   } else {
     await showSettings(ctx);
   }

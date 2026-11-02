@@ -1,4 +1,5 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
+import { COMMANDS } from "./commands.ts";
 import { DATA_CONTACT, escapeHtml, formatTime, msg, SCRIPTURE } from "./messages.ts";
 
 Deno.test("welcome escapes the user's name for HTML", () => {
@@ -50,5 +51,26 @@ Deno.test("weekly summary: quiet week is gentle and skips empty lines", () => {
   assertEquals(
     text,
     "Your week, 2 Nov – 8 Nov\n\nLast week was quiet. A moment of prayer today is a good place to start again.",
+  );
+});
+
+Deno.test("the guide lists every command in the bot's menu", () => {
+  for (const hasApp of [true, false]) {
+    const text = msg.help(hasApp);
+    for (const { command } of COMMANDS) assertStringIncludes(text, `/${command}`, `missing /${command}`);
+  }
+});
+
+Deno.test("onboarding explains the reminder and how to open the app", () => {
+  const text = msg.onboardingDone({ reminder_time: "21:00:00", nudges_enabled: true }, true);
+  assertStringIncludes(text, "I'll remind you to pray daily at 9:00 pm");
+  assertStringIncludes(text, "tap Open next to the message box");
+  const off = msg.welcomeBack(
+    { first_name: "Yang", reminder_time: "07:00:00", nudges_enabled: false },
+    false,
+  );
+  assertStringIncludes(
+    off,
+    "Welcome back, Yang. I'll check in on your requests at 7:00 am. Daily reminders are off.",
   );
 });

@@ -56,6 +56,37 @@ export interface ListedRequest {
   awaiting_reply: boolean;
 }
 
+function reminderSentence(user: Pick<UserRow, "reminder_time" | "nudges_enabled">): string {
+  if (!user.reminder_time) return "Choose a reminder time with /settings.";
+  const time = formatTime(user.reminder_time);
+  return user.nudges_enabled
+    ? `I'll remind you to pray daily at ${time}, and check in on your requests then too.`
+    : `I'll check in on your requests at ${time}. Daily reminders are off.`;
+}
+
+/** How to use the bot. Every command in COMMANDS (bot.ts) must appear here; a test checks it. */
+function guide(hasApp: boolean): string {
+  const app = hasApp
+    ? `The app: tap Open next to the message box, the button below, or send /app. It's the easiest ` +
+      `way to manage your requests, look back on answered prayers (Stones), see your journey and ` +
+      `change settings.`
+    : `/app — open the app (coming soon)`;
+  return [
+    `How to use ${APP_NAME}:`,
+    "",
+    "/pray — add something to pray for, e.g. /pray Sarah – surgery on Friday",
+    "/list — what you're praying for",
+    "/prayed — record that you prayed today",
+    "/settings — reminder time, daily reminder, weekly summary",
+    "/help — show this again",
+    "/deletemydata — delete everything I've stored",
+    "",
+    "When I check in about a request, just tap a button to reply.",
+    "",
+    app,
+  ].join("\n");
+}
+
 export const msg = {
   /** HTML: send with parse_mode "HTML". */
   welcome: (name: string | null) =>
@@ -77,14 +108,13 @@ export const msg = {
   askHour: "Pick a time:",
   askNudges: (time: string) =>
     `Got it: ${formatTime(time)}.\n\nWould you also like a short daily reminder to pray at that time?`,
-  onboardingDone: (user: Pick<UserRow, "reminder_time" | "nudges_enabled">) =>
-    `You're all set. ` +
-    (user.nudges_enabled && user.reminder_time
-      ? `I'll check in daily at ${formatTime(user.reminder_time)}.`
-      : "No daily reminders, just follow-ups.") +
-    `\n\n/pray — add something to pray for, e.g. /pray Sarah – surgery on Friday\n` +
-    `/list — what you're praying for\n/prayed — record that you prayed\n` +
-    `/settings — change your reminder time\n/deletemydata — delete everything I've stored`,
+  onboardingDone: (user: Pick<UserRow, "reminder_time" | "nudges_enabled">, hasApp: boolean) =>
+    `You're all set. ${reminderSentence(user)}\n\n${guide(hasApp)}`,
+  welcomeBack: (user: Pick<UserRow, "first_name" | "reminder_time" | "nudges_enabled">, hasApp: boolean) =>
+    `Welcome back${user.first_name ? `, ${user.first_name}` : ""}. ${reminderSentence(user)}\n\n${
+      guide(hasApp)
+    }`,
+  help: (hasApp: boolean) => guide(hasApp),
 
   settings: (
     user: Pick<UserRow, "reminder_time" | "nudges_enabled" | "weekly_summary_enabled" | "timezone">,
@@ -184,7 +214,7 @@ export const msg = {
   deleteCancelled: "Cancelled. Nothing was deleted.",
 
   fallback: "I didn't catch that. To add something to pray for, send /pray followed by it, e.g. " +
-    "/pray Sarah – surgery on Friday",
+    "/pray Sarah – surgery on Friday. Send /help to see everything I can do.",
   staleButton: "That button has expired.",
 } as const;
 

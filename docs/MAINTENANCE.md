@@ -39,7 +39,7 @@ Always run `npm run check` and `npm test` first (local Docker stack: `npm run db
 | **Mini App wording or screens** | Edit `miniapp/src/` → try it with `npm run miniapp:tunnel` → push to `main` (publishes in ~1 min) |
 | **Bot / scheduler / api behaviour** | Edit `supabase/functions/` → test locally (`npm run bot:dev`) → `npm run cloud:dev:deploy` |
 | **Database** | **New** migration: `npx supabase migration new <name>`. Never edit one that's already applied. End it by revoking `execute` from `public, anon, authenticated` (see AGENTS.md). Test with `npx supabase migration up --local` and `npm run test:db`, then `npm run cloud:dev:deploy`. |
-| **Bot commands list** | `COMMANDS` in `supabase/functions/_shared/bot.ts` → deploy → `npm run cloud:dev:webhook` |
+| **Bot commands list** | `COMMANDS` in `supabase/functions/_shared/commands.ts`, and the guide in `messages.ts` (a test checks they match) → deploy → `npm run cloud:dev:webhook` |
 | **App name** | `APP_NAME` in `messages.ts`; the Mini App's `<title>` (`miniapp/index.html`) and the "opens from its bot" message in `miniapp/src/App.tsx`; BotFather `/setname` |
 | **Scripture verse** | `SCRIPTURE` in `messages.ts` and `VERSE` in `miniapp/src/text.ts`. Use wording confirmed against the parish's Bible. |
 | **Data protection contact** | `DATA_CONTACT` in `messages.ts` (still a placeholder: must be filled in before real users) |

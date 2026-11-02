@@ -7,6 +7,7 @@ import { type Db, UNIQUE_VIOLATION, type UserRow } from "./db.ts";
 import { deleteCommand, deleteReply } from "./handlers/account.ts";
 import {
   consent,
+  helpCommand,
   setNudges,
   setTime,
   settingsCommand,
@@ -28,14 +29,7 @@ import {
 } from "./handlers/requests.ts";
 import { msg } from "./messages.ts";
 
-export const COMMANDS = [
-  { command: "pray", description: "Add something to pray for" },
-  { command: "list", description: "What you're praying for" },
-  { command: "app", description: "Open the app" },
-  { command: "prayed", description: "Record that you prayed" },
-  { command: "settings", description: "Reminder time and daily reminder" },
-  { command: "deletemydata", description: "Delete everything stored about you" },
-];
+export { COMMANDS } from "./commands.ts";
 
 export function createBot(token: string, db: Db): Bot<BotContext> {
   const bot = new Bot<BotContext>(token);
@@ -107,6 +101,7 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
   bot.command("list", listCommand);
   bot.command("app", appCommand);
   bot.command("settings", settingsCommand);
+  bot.command("help", helpCommand);
   bot.command("prayed", prayedCommand);
   bot.command("deletemydata", deleteCommand);
 
