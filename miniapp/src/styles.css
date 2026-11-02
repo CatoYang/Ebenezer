@@ -1,5 +1,11 @@
 /* Small layout additions on top of Telegram's UI kit. Colours come from Telegram's theme variables. */
 
+:root {
+  /* Space for the iPhone home indicator. iOS only reports env() with viewport-fit=cover (index.html);
+     Telegram also provides its own value, so use whichever is larger. */
+  --app-safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px));
+}
+
 body {
   margin: 0;
   background: var(--tg-theme-secondary-bg-color, var(--tgui--secondary_bg_color));
@@ -10,7 +16,12 @@ main {
 }
 
 main.with-tabbar {
-  padding-bottom: 88px;
+  padding-bottom: calc(88px + var(--app-safe-bottom));
+}
+
+/* The UI kit pads the tab bar by --tgui--safe_area_inset_bottom; feed it the value above. */
+.tabbar {
+  --tgui--safe_area_inset_bottom: var(--app-safe-bottom);
 }
 
 .center {

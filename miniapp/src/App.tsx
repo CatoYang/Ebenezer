@@ -119,7 +119,7 @@ export function App() {
     <AppRoot appearance={appearance} platform={platform()}>
       <main className={showTabs ? "with-tabbar" : undefined}>{content}</main>
       {showTabs && (
-        <Tabbar>
+        <Tabbar className="tabbar">
           {TABS.map((t) => (
             <Tabbar.Item key={t.id} text={t.text} selected={tab === t.id} onClick={() => setTab(t.id)}>
               <span className="tab-icon">{t.icon}</span>
