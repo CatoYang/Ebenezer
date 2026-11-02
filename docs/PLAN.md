@@ -63,6 +63,10 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
 - [x] **Settings** (app and `/settings`): reminder time (any minute in the app), daily reminder, weekly summary,
       timezone (app offers the device's). Changing time or timezone moves pending follow-ups to the new time,
       same local day.
+- [ ] **Bug: tab bar too low on iPhone.** The labels sit under the home indicator. Tried (9efed52):
+      `viewport-fit=cover` plus padding from `env(safe-area-inset-bottom)` / `--tg-safe-area-inset-bottom`;
+      not fixed. Next: log the inset values Telegram reports on the device (`Telegram.WebApp.safeAreaInset`,
+      `contentSafeAreaInset`), or pad the bar by a fixed minimum.
 - [x] **Weekly summary**: Mondays at the reminder time (8 am if none). Last week's days prayed, streak,
       prayers answered (by name), active requests, Open button. Only for users with an active request or a
       prayer in the last 4 weeks, who joined before this week. Sent before Monday's daily reminder.
