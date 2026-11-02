@@ -55,8 +55,11 @@ In a chat with [@BotFather](https://t.me/BotFather):
   (US$25/month, church card on the organisation's billing). Free projects pause after 7 days of
   inactivity, which would silently stop reminders.
 
-### 7. Later (Phase 2): Cloudflare
-Mini App hosting. Create the Cloudflare account with the organisation email when we get there.
+### 7. Mini App hosting: GitHub Pages
+No extra account. One-time: repo **Settings → Pages → Source: "GitHub Actions"**. Every push to `main`
+that touches `miniapp/` then rebuilds and publishes it (`.github/workflows/miniapp.yml`) at
+`https://catoyang.github.io/Ebenezer/`. When the repo moves to the church organisation, the address
+changes: update `MINIAPP_URL` and run the webhook script again.
 
 ## Part 2 — Local development
 
@@ -87,6 +90,18 @@ Other commands:
 cloud copy goes quiet while you test locally. Afterwards, run `npm run cloud:dev:webhook` to hand the bot
 back to the cloud. If the webhook is set while `bot:dev` is running, `bot:dev` stops with a 409 error.
 
+### Mini App
+
+```bash
+npm run miniapp:tunnel     # Vite dev server + Cloudflare tunnel; points the DEV bot's Open button at it
+```
+
+Open the dev bot in Telegram and tap **Open**: you're running your local Mini App code, with live reload,
+against the **cloud dev api** (the same data as the deployed bot). Ctrl+C points the Open button back at
+the published app. A new tunnel can take up to a minute to start answering.
+
+`npm run miniapp:build` builds it locally; `npm run check` type-checks it with the functions.
+
 ## Part 3 — Deploy an environment
 
 ### Cloud dev (set up 2026-11-03)
@@ -103,8 +118,8 @@ SUPABASE_ACCESS_TOKEN=sbp_…   # Account → Access Tokens; keeps this repo off
 | Command | What it does |
 | --- | --- |
 | `npm run cloud:dev:deploy` | Link, push new migrations, deploy both functions |
-| `npm run cloud:dev:secrets` | Copy `supabase/functions/.env` (bot token, secrets) to the cloud functions |
-| `npm run cloud:dev:webhook` | Point the dev bot at the cloud function (also after using `bot:dev`) |
+| `npm run cloud:dev:secrets` | Copy `supabase/functions/.env` (bot token, secrets, `MINIAPP_URL`) to the cloud functions |
+| `npm run cloud:dev:webhook` | Point the dev bot at the cloud function, set its commands and Open button (also after `bot:dev`) |
 
 ### First-time setup of an environment
 

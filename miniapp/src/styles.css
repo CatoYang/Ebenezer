@@ -1,0 +1,75 @@
+/* Small layout additions on top of Telegram's UI kit. Colours come from Telegram's theme variables. */
+
+body {
+  margin: 0;
+  background: var(--tg-theme-secondary-bg-color, var(--tgui--secondary_bg_color));
+}
+
+main {
+  min-height: 100vh;
+}
+
+main.with-tabbar {
+  padding-bottom: 88px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 40vh 0;
+}
+
+.chevron {
+  font-size: 22px;
+  opacity: 0.4;
+}
+
+.check {
+  color: var(--tg-theme-button-color, var(--tgui--link_color));
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 12px;
+}
+
+.chips > * {
+  cursor: pointer;
+}
+
+.destructive {
+  color: var(--tg-theme-destructive-text-color, #e53935);
+}
+
+.note {
+  font-style: italic;
+}
+
+.muted {
+  opacity: 0.5;
+}
+
+.verse {
+  margin: 16px;
+}
+
+.reference {
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+.tab-icon {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--tg-theme-link-color, var(--tgui--link_color));
+  font: inherit;
+  cursor: pointer;
+}

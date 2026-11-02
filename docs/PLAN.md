@@ -51,14 +51,16 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
 - [ ] Fill in `DATA_CONTACT` with the parish Data Protection Officer's contact (PDPA). Needed before real users.
 - [ ] Test with 2–3 friendly users for a week
 
-### Phase 2 — My journey
-- Mini App (React + Vite): streak, prayers per week, calendar heatmap, prayer list, settings
-- Manage requests in the Mini App: edit, mark answered, change interval, stop, without waiting for a follow-up
-- Answered prayers and their notes (the "stones of remembrance")
-- Pick from people you've prayed for before when adding a request (names already stored; no phone contacts)
-- `api` Edge Function that verifies `initData`
-- Weekly personal digest (Monday morning, user's local time)
-- Timezone setting (detected from the Mini App via `Intl`; Phase 1 assumes `Asia/Singapore`)
+### Phase 2 — My journey (Mini App, hosted on GitHub Pages)
+- [x] `api` Edge Function: verifies Telegram `initData` on every request; all data scoped to that user
+- [x] App shell (React 18 + Telegram UI kit), opened from the bot's Open menu button, `/app` and `/list`
+- [x] **Praying for**: list; add (suggests names prayed for before; no phone contacts); edit; "I prayed for this";
+      change check-in interval; mark answered with a note; stop praying for it
+- [x] **Stones**: answered prayers with notes, newest first; edit a note
+- [x] GitHub Pages deploy on push; local development inside Telegram via a Cloudflare tunnel
+- [ ] **Journey**: days prayed this week, streak, calendar of days prayed
+- [ ] **Settings** screen: reminder time, daily reminder, timezone (detect with `Intl`; Phase 1 assumes `Asia/Singapore`)
+- [ ] Weekly personal digest (Monday morning, user's local time)
 
 ### Phase 3 — Connections (to be designed)
 A user can invite someone to shepherd or oversee them. Questions to settle first:

@@ -4,7 +4,8 @@
 import type { FollowUpDays, FollowUpResponse } from "../callbacks.ts";
 import { type BotContext, editFromButton, updateUser } from "../context.ts";
 import type { Awaiting } from "../db.ts";
-import { intervalKeyboard, skipNoteKeyboard } from "../keyboards.ts";
+import { MINIAPP_URL } from "../env.ts";
+import { intervalKeyboard, openAppKeyboard, skipNoteKeyboard } from "../keyboards.ts";
 import { type ListedRequest, msg } from "../messages.ts";
 import { parseRequest } from "../requests.ts";
 
@@ -140,5 +141,12 @@ export async function listCommand(ctx: BotContext) {
     .eq("user_id", ctx.user.id).eq("status", "answered");
   if (countError) throw countError;
 
-  await ctx.reply(msg.list(rows.slice(0, LIST_LIMIT), rows.length > LIST_LIMIT, count ?? 0));
+  await ctx.reply(msg.list(rows.slice(0, LIST_LIMIT), rows.length > LIST_LIMIT, count ?? 0), {
+    reply_markup: MINIAPP_URL ? openAppKeyboard(MINIAPP_URL) : undefined,
+  });
+}
+
+export async function appCommand(ctx: BotContext) {
+  if (!MINIAPP_URL) return void await ctx.reply(msg.appUnavailable);
+  await ctx.reply(msg.openApp, { reply_markup: openAppKeyboard(MINIAPP_URL) });
 }

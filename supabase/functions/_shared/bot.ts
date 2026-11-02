@@ -17,6 +17,7 @@ import {
 } from "./handlers/onboarding.ts";
 import { nudgeReply, prayedCommand } from "./handlers/prayer.ts";
 import {
+  appCommand,
   followUpReply,
   intervalChosen,
   listCommand,
@@ -29,6 +30,7 @@ import { msg } from "./messages.ts";
 export const COMMANDS = [
   { command: "pray", description: "Add something to pray for" },
   { command: "list", description: "What you're praying for" },
+  { command: "app", description: "Open the app" },
   { command: "prayed", description: "Record that you prayed" },
   { command: "settings", description: "Reminder time and daily reminder" },
   { command: "deletemydata", description: "Delete everything stored about you" },
@@ -102,6 +104,7 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
 
   bot.command("pray", prayCommand);
   bot.command("list", listCommand);
+  bot.command("app", appCommand);
   bot.command("settings", settingsCommand);
   bot.command("prayed", prayedCommand);
   bot.command("deletemydata", deleteCommand);

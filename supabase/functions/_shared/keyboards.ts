@@ -89,4 +89,8 @@ export const followUpKeyboard = (followUpId: string) =>
     ],
   ]);
 
+/** Opens the Mini App inside Telegram. */
+export const openAppKeyboard = (url: string) =>
+  InlineKeyboard.from([[InlineKeyboard.webApp(label.openApp, url)]]);
+
 export const skipNoteKeyboard = () => InlineKeyboard.from([[btn(label.skip, { kind: "skip_note" })]]);

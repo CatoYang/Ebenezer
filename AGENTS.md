@@ -26,11 +26,13 @@ later, not-yet-designed phase. Don't add group or leader concepts until then.
 
 ## Architecture
 
-Telegram → Supabase only. Everything is TypeScript.
+Telegram → Supabase, plus a static Mini App on GitHub Pages. Everything is TypeScript.
 
 ```
 Telegram ── webhook ──▶ telegram-bot    Edge Function (grammY): commands and buttons
 Telegram ◀── sends ──── scheduler-tick  Edge Function: due follow-ups and daily nudges
+Mini App ── initData ─▶ api             Edge Function: JSON API, checks Telegram's signature every request
+(GitHub Pages, React)
                         Supabase Cron ─▶ POSTs scheduler-tick every 5 min, URL + secret from Vault
                         Postgres      ◀─ all reads/writes via the service role
 ```
@@ -54,9 +56,19 @@ supabase/
       context.ts db.ts env.ts telegram.ts
     telegram-bot/index.ts      webhook entry
     scheduler-tick/            cron entry + follow_ups.ts + nudges.ts
+    api/                       Mini App API: index.ts (auth, CORS) + routes.ts (endpoints)
+    _shared/telegram_auth.ts   verifyInitData (HMAC with the bot token, 24 h max age)
+miniapp/                       npm workspace: React 18 + Vite + @telegram-apps/telegram-ui
+  src/App.tsx                  status + navigation (tabs: Praying for, Stones; detail screens)
+  src/screens/                 PrayingFor, AddRequest, RequestDetail, AnswerRequest, Stones (+ StoneNote)
+  src/telegram.ts              typed window.Telegram.WebApp, useBackButton, useMainButton, haptics
+  src/api.ts  src/config.ts    fetch client (Authorization: tma <initData>); API_URL (VITE_API_URL)
+  src/text.ts                  app wording shared across screens (intervals, verse)
+.github/workflows/miniapp.yml  build + publish the Mini App to GitHub Pages on push to main
 scripts/
   dev-bot.ts                   local long-polling bot + scheduler every minute, against local Supabase
   dev-due.ts                   local only: make all pending follow-ups due now
+  miniapp-tunnel.ts            Vite + Cloudflare tunnel; points the DEV bot's Open button at it
   set-webhook.ts               register webhook + command menu for a deployed env
 docs/                          PLAN.md, SETUP.md
 ```
@@ -77,6 +89,8 @@ npm run fmt
 npm run deploy         # deploy both functions to the linked project
 npm run cloud:dev:deploy    # cloud dev: link + db push + deploy (reads git-ignored .env.dev)
 npm run cloud:dev:webhook   # point the dev bot back at the cloud (bot:dev removes the webhook)
+npm run miniapp:tunnel      # develop the Mini App inside Telegram (talks to the cloud dev api)
+npm run miniapp:build       # production build into miniapp/dist
 ```
 
 Run `npm run check` and `npm test` before calling work done.
@@ -131,6 +145,15 @@ migration must end by revoking function `execute` from `public, anon, authentica
   titles or details. Log error messages only.
 - `/deletemydata` deletes the `users` row. Every user-owned table must reference `users` with
   `on delete cascade`.
+
+**Mini App**
+- It talks only to the `api` function, never to Supabase directly, and holds no keys. Every endpoint
+  scopes to the user from verified `initData`; state changes go through the SQL functions.
+- React 18 (the Telegram UI kit's peer dependency); don't upgrade to 19 until the kit supports it.
+- Use Telegram's own Back and Main buttons (`useBackButton`, `useMainButton`) rather than in-page ones.
+- The Mini App's wording lives in `miniapp/src/text.ts` and the screens. Keep shared words (intervals,
+  the verse) in step with the bot's `messages.ts`.
+- The build must work under a sub-path (`base: "./"`): it's served from `/Ebenezer/` on GitHub Pages.
 
 **Deno**
 - Edge Functions run on Deno (the local edge runtime is Deno 2.1-compatible). Use the `deno.json` import

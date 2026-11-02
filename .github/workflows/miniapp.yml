@@ -1,0 +1,47 @@
+# Builds the Mini App and publishes it to GitHub Pages on every push to main that touches it.
+# One-time setup: repo Settings → Pages → Source: "GitHub Actions".
+name: Mini App → GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["miniapp/**", "package-lock.json", ".github/workflows/miniapp.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      # Only the Mini App workspace; skips the Supabase CLI, Deno and cloudflared dev tools.
+      - run: npm ci --workspace miniapp --include-workspace-root=false
+      - run: npm run build --workspace miniapp
+        # env:
+        #   VITE_API_URL: https://<prod ref>.supabase.co/functions/v1/api   # when there's a prod build
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: miniapp/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

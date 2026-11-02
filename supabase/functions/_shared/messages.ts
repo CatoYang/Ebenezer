@@ -141,6 +141,9 @@ export const msg = {
       `\n\nAnswered prayers so far: ${answeredCount}`;
   },
 
+  openApp: `Open the app to see and manage what you're praying for, and to look back on answered prayers.`,
+  appUnavailable: "The app isn't available yet. For now, use /list and /pray.",
+
   deleteConfirm:
     "This permanently deletes your prayer requests, prayer history and settings. It can't be undone.",
   deleted: "Done. Everything I stored about you has been deleted. Send /start if you'd like to begin again.",
@@ -176,6 +179,7 @@ export const label = {
   later: "Ask me tomorrow",
   stop: "Stop following up",
   skip: "Skip",
+  openApp: `Open ${APP_NAME}`,
   deleteYes: "Delete everything",
   cancel: "Cancel",
 } as const;

@@ -1,3 +1,6 @@
+/** Public address of the Mini App (GitHub Pages). Optional: without it, /app explains it isn't available. */
+export const MINIAPP_URL: string | null = Deno.env.get("MINIAPP_URL") || null;
+
 export function requireEnv(name: string): string {
   const value = Deno.env.get(name);
   if (!value) throw new Error(`Missing environment variable ${name}`);

@@ -6,3 +6,6 @@ supabase/functions/.env
 
 # Local reference material, not part of the repo
 *.pdf
+
+# Mini App build output (published by GitHub Actions)
+miniapp/dist/
