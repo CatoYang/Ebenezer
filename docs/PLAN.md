@@ -43,15 +43,19 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
 - [x] Daily nudge (scheduler): "Have you had a moment to pray today?" Yes / Not yet
 - [x] `/deletemydata` with confirmation
 - [x] Blocked-user handling, update de-duplication, consent gate
-- [ ] **Next:** `/pray` → follow-up interval buttons → `prayer_requests` + `follow_ups` + `prayer_logs`
-- [ ] **Next:** follow-up sending in `scheduler-tick` (`claim_due_follow_ups`, `FOR UPDATE SKIP LOCKED`)
-- [ ] **Next:** follow-up buttons: Answered (optional note) / Still praying / Remind me tomorrow / Stop
-- [ ] `/list`: active requests
-- [ ] Contact person in the privacy notice (required by Singapore's PDPA before real users)
+- [x] `/pray`: saves the request immediately, then asks 3 days / 1 week / 2 weeks / 1 month / Don't check in
+- [x] Follow-up sending in `scheduler-tick` (`claim_due_follow_ups`, `FOR UPDATE SKIP LOCKED`)
+- [x] Follow-up buttons: Answered (optional note) / Still praying / Ask me tomorrow / Stop following up
+- [x] `/list`: active requests, prayer count, next check-in, answered count
+- [x] Data contact line in the privacy notice (placeholder text in `DATA_CONTACT`, `messages.ts`)
+- [ ] Fill in `DATA_CONTACT` with the parish Data Protection Officer's contact (PDPA). Needed before real users.
 - [ ] Test with 2–3 friendly users for a week
 
 ### Phase 2 — My journey
 - Mini App (React + Vite): streak, prayers per week, calendar heatmap, prayer list, settings
+- Manage requests in the Mini App: edit, mark answered, change interval, stop, without waiting for a follow-up
+- Answered prayers and their notes (the "stones of remembrance")
+- Pick from people you've prayed for before when adding a request (names already stored; no phone contacts)
 - `api` Edge Function that verifies `initData`
 - Weekly personal digest (Monday morning, user's local time)
 - Timezone setting (detected from the Mini App via `Intl`; Phase 1 assumes `Asia/Singapore`)
@@ -82,15 +86,18 @@ within an hour after their reminder time, they've consented, aren't blocked, hav
 haven't prayed today. The claim inserts `notifications(user_id, 'nudge', <local date>)`, whose unique key
 prevents double sends. A failed send deletes the claim so the next run retries it.
 
-**Prayer requests (next):** `/pray Sarah – surgery on Friday`, or `/pray` → "Who or what are you
-praying for?" (Telegram ForceReply, tracked in `users.awaiting`) → "Follow up in?" 3 days / 1 week /
-2 weeks / 1 month → saved, a prayer is logged, and the follow-up is scheduled at
-`follow_up_due_at(user, days)`.
+**Prayer requests:** `/pray Sarah – surgery on Friday`, or `/pray` → "Who or what are you praying
+for?" (Telegram ForceReply, tracked in `users.awaiting`). The request is saved straight away and a
+prayer is logged. Then "When should I check in?" 3 days / 1 week / 2 weeks / 1 month / Don't check in.
+The follow-up is scheduled at `follow_up_due_at(user, days)`. A request whose question is ignored stays
+saved with no follow-up. Text is split into title and details on the first spaced dash or colon.
 
-**Follow-up (next):** "A week ago you prayed for Sarah (surgery on Friday). How is it going?"
-- Answered → mark answered, then offer an optional note.
+**Follow-up:** "Checking in on Sarah (surgery on Friday). You've prayed for this twice since 3 Nov.
+How is it going?"
+- Answered → mark answered, then "Would you like to write down how it was answered?" (reply or Skip).
 - Still praying → log a prayer and schedule the next follow-up at the same interval.
-- Remind me tomorrow → +1 day at the reminder time.
-- Stop → close the request.
+- Ask me tomorrow → +1 day at the reminder time.
+- Stop following up → close the request.
 
-The bot then edits the message to show the choice.
+The bot then edits the message to show the choice. A second tap gets "Already recorded."
+An unanswered follow-up stays open (its buttons keep working), and no new one is scheduled until it's answered.

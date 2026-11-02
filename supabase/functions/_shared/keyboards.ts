@@ -1,5 +1,5 @@
 import { InlineKeyboard } from "grammy";
-import { encode, type Origin } from "./callbacks.ts";
+import { encode, type FollowUpDays, type Origin } from "./callbacks.ts";
 import { label } from "./messages.ts";
 
 const btn = (text: string, cb: Parameters<typeof encode>[0]) => InlineKeyboard.text(text, encode(cb));
@@ -61,3 +61,32 @@ export const deleteKeyboard = () =>
     btn(label.deleteYes, { kind: "delete", confirm: true }),
     btn(label.cancel, { kind: "delete", confirm: false }),
   ]]);
+
+const INTERVAL_LABELS: Record<FollowUpDays, string> = {
+  3: label.days3,
+  7: label.week1,
+  14: label.weeks2,
+  30: label.month1,
+};
+
+/** "When should I check in?" after adding a request. */
+export const intervalKeyboard = (requestId: string) =>
+  InlineKeyboard.from([
+    ([3, 7] as const).map((days) => btn(INTERVAL_LABELS[days], { kind: "interval", requestId, days })),
+    ([14, 30] as const).map((days) => btn(INTERVAL_LABELS[days], { kind: "interval", requestId, days })),
+    [btn(label.noCheckIn, { kind: "interval", requestId, days: null })],
+  ]);
+
+export const followUpKeyboard = (followUpId: string) =>
+  InlineKeyboard.from([
+    [
+      btn(label.answered, { kind: "follow_up", followUpId, response: "answered" }),
+      btn(label.stillPraying, { kind: "follow_up", followUpId, response: "still_praying" }),
+    ],
+    [
+      btn(label.later, { kind: "follow_up", followUpId, response: "later" }),
+      btn(label.stop, { kind: "follow_up", followUpId, response: "stop" }),
+    ],
+  ]);
+
+export const skipNoteKeyboard = () => InlineKeyboard.from([[btn(label.skip, { kind: "skip_note" })]]);

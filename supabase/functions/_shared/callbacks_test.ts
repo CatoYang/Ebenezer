@@ -1,6 +1,8 @@
 import { assertEquals } from "@std/assert";
 import { type Callback, encode, parse } from "./callbacks.ts";
 
+const ID = "0b9f2f4e-8a1c-4d2e-9f00-123456789abc";
+
 const ALL: Callback[] = [
   { kind: "consent", accept: true },
   { kind: "consent", accept: false },
@@ -15,6 +17,14 @@ const ALL: Callback[] = [
   { kind: "nudge_reply", prayed: false },
   { kind: "delete", confirm: true },
   { kind: "delete", confirm: false },
+  { kind: "interval", requestId: ID, days: 3 },
+  { kind: "interval", requestId: ID, days: 30 },
+  { kind: "interval", requestId: ID, days: null },
+  { kind: "follow_up", followUpId: ID, response: "answered" },
+  { kind: "follow_up", followUpId: ID, response: "still_praying" },
+  { kind: "follow_up", followUpId: ID, response: "later" },
+  { kind: "follow_up", followUpId: ID, response: "stop" },
+  { kind: "skip_note" },
 ];
 
 Deno.test("every callback round-trips and fits Telegram's 64-byte limit", () => {
@@ -27,7 +37,24 @@ Deno.test("every callback round-trips and fits Telegram's 64-byte limit", () => 
 
 Deno.test("malformed or stale callback data parses to null", () => {
   for (
-    const data of ["", "nope", "consent", "consent:x", "time:z:p", "time:o:2400", "time:o:0760", "settings:x"]
+    const data of [
+      "",
+      "nope",
+      "consent",
+      "consent:x",
+      "time:z:p",
+      "time:o:2400",
+      "time:o:0760",
+      "settings:x",
+      "consent:toString",
+      "time:constructor:p",
+      "iv:not-a-uuid:7",
+      `iv:${ID}:5`,
+      `iv:${ID}:07`,
+      `fu:${ID}:z`,
+      `fu:${ID}:constructor`,
+      "note:x",
+    ]
   ) {
     assertEquals(parse(data), null, data);
   }

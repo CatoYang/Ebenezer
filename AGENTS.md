@@ -30,7 +30,7 @@ Telegram → Supabase only. Everything is TypeScript.
 
 ```
 Telegram ── webhook ──▶ telegram-bot    Edge Function (grammY): commands and buttons
-Telegram ◀── sends ──── scheduler-tick  Edge Function: due nudges (follow-ups next)
+Telegram ◀── sends ──── scheduler-tick  Edge Function: due follow-ups and daily nudges
                         Supabase Cron ─▶ POSTs scheduler-tick every 5 min, URL + secret from Vault
                         Postgres      ◀─ all reads/writes via the service role
 ```
@@ -49,12 +49,14 @@ supabase/
       callbacks.ts             all inline-button callback data (encode/parse, 64-byte limit)
       keyboards.ts             all inline keyboards
       messages.ts              ALL user-facing wording
-      handlers/                onboarding.ts, prayer.ts, account.ts
+      handlers/                onboarding.ts, requests.ts (/pray, /list, follow-ups), prayer.ts, account.ts
+      requests.ts              parseRequest: "Sarah – surgery" → title + details
       context.ts db.ts env.ts telegram.ts
     telegram-bot/index.ts      webhook entry
-    scheduler-tick/            cron entry + nudges.ts
+    scheduler-tick/            cron entry + follow_ups.ts + nudges.ts
 scripts/
-  dev-bot.ts                   local long-polling bot against local Supabase
+  dev-bot.ts                   local long-polling bot + scheduler every minute, against local Supabase
+  dev-due.ts                   local only: make all pending follow-ups due now
   set-webhook.ts               register webhook + command menu for a deployed env
 docs/                          PLAN.md, SETUP.md
 ```
@@ -64,7 +66,9 @@ docs/                          PLAN.md, SETUP.md
 ```bash
 npm install            # Supabase CLI + Deno as local dev dependencies (no global installs needed)
 npm run db:start       # local Supabase in Docker, applies migrations
-npm run bot:dev        # run the bot locally with polling (needs supabase/functions/.env)
+npm run bot:dev        # run the bot locally with polling + scheduler (needs supabase/functions/.env)
+npm run dev:due        # make pending follow-ups due now (local), to test the follow-up loop
+npx supabase migration up --local   # apply new migrations without wiping local data
 npm test               # unit (deno test) + database (supabase test db)
 npm run test:unit      # deno tests only: supabase/functions/**/*_test.ts
 npm run test:db        # pgTAP only
@@ -86,8 +90,15 @@ Run `npm run check` and `npm test` before calling work done.
 | `notifications` | scheduled sends; unique (`user_id`, `kind`, `period_key`) makes the scheduler idempotent |
 | `processed_updates` | Telegram `update_id`s already handled (pruned after 3 days by cron) |
 
-SQL functions: `follow_up_due_at(user_id, days)` (N local days out, at the user's reminder time) and
-`claim_due_nudges(limit)`. Do time-zone maths in SQL (`at time zone`), not in JS.
+SQL functions (all state changes are single calls, guarded by user id and status):
+- `follow_up_due_at(user_id, days)`: N local days out, at the user's reminder time
+- `format_local(ts, tz)`: "Tue 10 Nov, 9:00 pm"
+- `create_prayer_request`, `schedule_follow_up` (null days = don't check in), `respond_follow_up`
+  (answered / still_praying / later / stop; no rows = stale or double tap), `list_active_requests`
+- `claim_due_follow_ups`, `claim_due_nudges` (scheduler claims)
+
+Do time-zone maths and date formatting in SQL (`at time zone`, `format_local`), not in JS. Every
+migration must end by revoking function `execute` from `public, anon, authenticated`.
 
 ## Rules
 
@@ -97,8 +108,10 @@ SQL functions: `follow_up_due_at(user_id, days)` (N local days out, at the user'
 - Middleware order in `bot.ts` matters: de-duplicate → private chats only → load user → `my_chat_member`
   → `/start` → consent gate → everything else. New commands go after the consent gate.
 - Wording lives in `messages.ts`. Add button labels to `label` there.
-- After a button tap, edit the original message (`editFromButton`) so the chat stays tidy, and always
-  `answerCallbackQuery`.
+- After a button tap, edit the original message (`editFromButton`) so the chat stays tidy. The dispatcher
+  in `bot.ts` answers the callback query exactly once; a handler returns a string to show a toast instead.
+- Messages are plain text (no parse mode) unless noted, so request titles need no escaping. The welcome
+  message is HTML; anything user-supplied in an HTML message must go through `escapeHtml`.
 
 **Scheduler**
 - Claim, then send. The claim is a single SQL statement: an insert into `notifications` with

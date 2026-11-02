@@ -4,6 +4,7 @@
 import { Api } from "grammy";
 import { createDb } from "../_shared/db.ts";
 import { requireEnv, secretsMatch } from "../_shared/env.ts";
+import { sendDueFollowUps } from "./follow_ups.ts";
 import { sendDueNudges } from "./nudges.ts";
 
 const db = createDb();
@@ -15,7 +16,7 @@ Deno.serve(async (req) => {
   if (!secretsMatch(req.headers.get("x-scheduler-secret"), secret)) {
     return new Response("Unauthorized", { status: 401 });
   }
+  const followUps = await sendDueFollowUps(db, api);
   const nudges = await sendDueNudges(db, api);
-  // Follow-ups and weekly digests are added here as they're built.
-  return Response.json({ nudges });
+  return Response.json({ followUps, nudges });
 });

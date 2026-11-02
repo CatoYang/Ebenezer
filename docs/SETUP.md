@@ -77,6 +77,8 @@ Other commands:
 | --- | --- |
 | `npm test` | Unit tests (Deno) + database tests (pgTAP) |
 | `npm run check` | Type-check, lint, format check |
+| `npm run dev:due` | Make all pending follow-ups due now, so `bot:dev` sends them within a minute |
+| `npx supabase migration up --local` | Apply new migrations without wiping local data |
 | `npm run db:reset` | Rebuild the local DB from migrations (wipes local data) |
 | `npm run functions:serve` | Run the Edge Functions locally (for testing `scheduler-tick` with curl) |
 | `npm run db:stop` | Stop the local Docker stack |

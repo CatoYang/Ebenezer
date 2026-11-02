@@ -2,7 +2,7 @@
 
 import { Bot } from "grammy";
 import { parse } from "./callbacks.ts";
-import type { BotContext } from "./context.ts";
+import { type BotContext, updateUser } from "./context.ts";
 import { type Db, UNIQUE_VIOLATION, type UserRow } from "./db.ts";
 import { deleteCommand, deleteReply } from "./handlers/account.ts";
 import {
@@ -16,9 +16,19 @@ import {
   start,
 } from "./handlers/onboarding.ts";
 import { nudgeReply, prayedCommand } from "./handlers/prayer.ts";
+import {
+  followUpReply,
+  intervalChosen,
+  listCommand,
+  prayCommand,
+  skipNote,
+  textMessage,
+} from "./handlers/requests.ts";
 import { msg } from "./messages.ts";
 
 export const COMMANDS = [
+  { command: "pray", description: "Add something to pray for" },
+  { command: "list", description: "What you're praying for" },
   { command: "prayed", description: "Record that you prayed" },
   { command: "settings", description: "Reminder time and daily reminder" },
   { command: "deletemydata", description: "Delete everything stored about you" },
@@ -84,6 +94,14 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
     else await ctx.reply(msg.needsStart);
   });
 
+  // Any command abandons a pending free-text question (e.g. "Who are you praying for?").
+  bot.use(async (ctx, next) => {
+    if (ctx.user.awaiting && ctx.message?.text?.startsWith("/")) await updateUser(ctx, { awaiting: null });
+    await next();
+  });
+
+  bot.command("pray", prayCommand);
+  bot.command("list", listCommand);
   bot.command("settings", settingsCommand);
   bot.command("prayed", prayedCommand);
   bot.command("deletemydata", deleteCommand);
@@ -94,6 +112,8 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
       await ctx.answerCallbackQuery({ text: msg.staleButton });
       return;
     }
+    // A handler may return a short toast (e.g. "Already recorded" for a double tap).
+    let toast: string | void = undefined;
     switch (cb.kind) {
       case "consent":
         await consent(ctx, cb.accept);
@@ -119,10 +139,20 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
       case "delete":
         await deleteReply(ctx, cb.confirm);
         break;
+      case "interval":
+        toast = await intervalChosen(ctx, cb.requestId, cb.days);
+        break;
+      case "follow_up":
+        toast = await followUpReply(ctx, cb.followUpId, cb.response);
+        break;
+      case "skip_note":
+        await skipNote(ctx);
+        break;
     }
-    await ctx.answerCallbackQuery();
+    await ctx.answerCallbackQuery(toast ? { text: toast } : undefined);
   });
 
+  bot.on("message:text", textMessage);
   bot.on("message", (ctx) => ctx.reply(msg.fallback));
 
   return bot;

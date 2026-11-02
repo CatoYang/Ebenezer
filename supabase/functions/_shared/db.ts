@@ -10,6 +10,11 @@ export function createDb(): Db {
   });
 }
 
+/** The one free-text reply the bot is waiting for (users.awaiting). Cleared by the next command. */
+export type Awaiting =
+  | { kind: "request_text"; prompt_message_id: number }
+  | { kind: "answer_note"; request_id: string; prompt_message_id: number };
+
 export interface UserRow {
   id: string;
   telegram_user_id: number;
@@ -19,7 +24,7 @@ export interface UserRow {
   reminder_time: string | null; // "HH:MM:SS"
   nudges_enabled: boolean;
   privacy_accepted_at: string | null;
-  awaiting: Record<string, unknown> | null;
+  awaiting: Awaiting | null;
   blocked_at: string | null;
   created_at: string;
 }
