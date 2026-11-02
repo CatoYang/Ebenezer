@@ -106,6 +106,10 @@ the published app. A new tunnel can take up to a minute to start answering.
 
 ### Cloud dev (set up 2026-11-03)
 
+Bot: **Ebenezer, `@EbenezerStonesBot`** (its token is `BOT_TOKEN` in `supabase/functions/.env`). Earlier test
+bots `@PrayerEchoDevBot` and `@EbenezerDevBot` are retired; the webhook secret was rotated so the cloud
+refuses them.
+
 The dev project's ref, database password and a CLI access token for its Supabase account live in
 `.env.dev` at the repo root (git-ignored):
 
