@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="160" alt="Ebenezer logo: a cairn of stones crowned with a gold cross at dawn">
+</p>
+
 # Ebenezer
 
 > Then Samuel took a stone and set it up between Mizpah and Shen and called its name Ebenezer; for he
@@ -81,6 +85,7 @@ supabase/
 miniapp/               the Mini App (React + Vite)
 scripts/               local dev bot, tunnel, webhook and test helpers
 docs/                  user guide, maintenance, setup, plan
+assets/                logo (logo.svg is the editable source; logo.png is 640×640 for Telegram)
 .github/workflows/     publishes the Mini App to GitHub Pages
 ```
 
