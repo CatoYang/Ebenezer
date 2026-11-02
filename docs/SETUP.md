@@ -1,0 +1,109 @@
+# Setup
+
+Two parts: **accounts** (once, owned by the organisation rather than a person) and **environments**
+(dev first, then prod). Never paste tokens or secrets into chat, commits or issues. They go in the
+password manager, `supabase/functions/.env` (dev, git-ignored) or `supabase secrets set`.
+
+## Part 1 — Accounts
+
+The aim is that the app outlives any one person. Every account hangs off one organisation email, every
+credential lives in a shared vault, and at least two people can get in.
+
+### 1. Organisation email (everything else hangs off this)
+- If the church has its own domain, ask for an address on it, e.g. `prayer-app@<church domain>`.
+  Otherwise create a new Gmail account for the app.
+- Turn on 2-step verification with an authenticator app. Save the backup codes in the vault (step 2).
+- Add a second person's phone or email as a recovery option, e.g. a church admin.
+
+### 2. Password manager with a shared vault
+- Bitwarden (free for 2 people, discounts for nonprofits) or 1Password.
+- Create a shared collection, e.g. "Prayer Echo". Share it with one other trusted person.
+- Everything from here goes in it: logins, 2FA backup codes, both bot tokens, webhook and scheduler
+  secrets, and the Supabase database passwords.
+
+### 3. Telegram account that owns the bots
+A bot belongs to the Telegram account that created it in BotFather, and a Telegram account needs a phone
+number. Use a **church-owned number**, not a personal one.
+- Get a prepaid SIM for the church and sign up for Telegram with it. A spare phone works, and you can then
+  also log in from Telegram Desktop.
+- Settings → Privacy and Security → **Two-Step Verification**: set a password and store it in the vault.
+- Same screen → "Delete my account if away for": set it to the **longest option**.
+- **Keep the SIM topped up.** If a prepaid number expires and is reassigned, the new holder can take over
+  the Telegram account, and the bots with it.
+
+### 4. Create the two bots (in that Telegram account)
+In a chat with [@BotFather](https://t.me/BotFather):
+1. `/newbot` → name "Prayer Echo (Dev)", username e.g. `<church>PrayerEchoDevBot`. Save the token in the vault.
+2. `/newbot` → name "Prayer Echo", username e.g. `<church>PrayerEchoBot`. Save the token in the vault.
+3. For each bot: `/setdescription`, `/setabouttext` and `/setuserpic`. The command list is set by
+   `npm run webhook:set`.
+
+### 5. GitHub organisation
+- Sign in to GitHub as the organisation email → create a **free organisation**, e.g. `<church>-tech`.
+- Invite your personal GitHub account as a second **Owner**.
+- The repo currently lives at https://github.com/CatoYang/Prayer-Echo. Move it into the organisation
+  with Settings → Transfer ownership; GitHub redirects the old URL.
+
+### 6. Supabase organisation and projects
+- Sign up at supabase.com with the organisation email (or "Continue with GitHub" as that account).
+- Create an **organisation** named after the church. Invite your personal account as **Owner**.
+- Create two projects in it, both in **Southeast Asia (Singapore)**:
+  - `prayer-echo-dev`
+  - `prayer-echo-prod`
+  Save each database password in the vault.
+- Both can start on the Free plan. Before real users depend on reminders, upgrade **prod** to Pro
+  (US$25/month, church card on the organisation's billing). Free projects pause after 7 days of
+  inactivity, which would silently stop reminders.
+
+### 7. Later (Phase 2): Cloudflare
+Mini App hosting. Create the Cloudflare account with the organisation email when we get there.
+
+## Part 2 — Local development
+
+Prerequisites: Docker running (WSL: Docker Desktop with WSL integration, or Docker Engine in WSL),
+Node 20+.
+
+```bash
+npm install                                   # installs the Supabase CLI and Deno locally
+cp supabase/functions/.env.example supabase/functions/.env
+# edit supabase/functions/.env: BOT_TOKEN = the DEV bot token; secrets = `openssl rand -hex 32` each
+npm run db:start                              # local Postgres + API in Docker; applies migrations
+npm run bot:dev                               # runs the bot with polling; message your dev bot
+```
+
+Other commands:
+
+| Command | What it does |
+| --- | --- |
+| `npm test` | Unit tests (Deno) + database tests (pgTAP) |
+| `npm run check` | Type-check, lint, format check |
+| `npm run db:reset` | Rebuild the local DB from migrations (wipes local data) |
+| `npm run functions:serve` | Run the Edge Functions locally (for testing `scheduler-tick` with curl) |
+| `npm run db:stop` | Stop the local Docker stack |
+
+`npm run bot:dev` deletes the dev bot's webhook while it runs. After using it, run `npm run webhook:set`
+again if the deployed dev function should receive messages.
+
+## Part 3 — Deploy an environment
+
+Do this for dev first, then repeat for prod with the prod bot and prod project.
+
+```bash
+npx supabase login                            # opens a browser; log in as an organisation member
+npx supabase link --project-ref <PROJECT_REF> # the ref is in the project URL: <ref>.supabase.co
+npx supabase db push                          # applies migrations
+npx supabase secrets set BOT_TOKEN=… WEBHOOK_SECRET=… SCHEDULER_SECRET=…
+npm run deploy                                # deploys telegram-bot and scheduler-tick
+BOT_TOKEN=… WEBHOOK_SECRET=… PROJECT_REF=… npm run webhook:set
+```
+
+Then, in the project's SQL editor, store the scheduler's address and secret in Vault. The cron job in
+the migration reads them and does nothing until they exist.
+
+```sql
+select vault.create_secret('https://<PROJECT_REF>.supabase.co/functions/v1/scheduler-tick', 'scheduler_url');
+select vault.create_secret('<the same SCHEDULER_SECRET as above>', 'scheduler_secret');
+```
+
+To check it's working, send `/start` to the bot. Then look at the `notifications` table after your
+reminder time, or at Edge Functions → scheduler-tick → Logs.

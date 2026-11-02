@@ -1,0 +1,23 @@
+{
+  "name": "prayer-echo",
+  "private": true,
+  "description": "Prayer Echo: Telegram bot + scheduler on Supabase Edge Functions",
+  "scripts": {
+    "db:start": "supabase start -x studio,realtime,storage-api,imgproxy,mailpit,logflare,vector,supavisor,postgres-meta",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "bot:dev": "supabase status -o env --override-name api.url=SUPABASE_URL --override-name auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY > supabase/.temp/local.env && deno run --allow-net --allow-env --config supabase/functions/deno.json --env-file=supabase/.temp/local.env --env-file=supabase/functions/.env scripts/dev-bot.ts",
+    "functions:serve": "supabase functions serve --env-file supabase/functions/.env",
+    "test": "npm run test:unit && npm run test:db",
+    "test:unit": "deno test --config supabase/functions/deno.json supabase/functions",
+    "test:db": "supabase test db",
+    "check": "deno check --config supabase/functions/deno.json supabase/functions/*/index.ts scripts/*.ts && deno lint --config supabase/functions/deno.json supabase/functions scripts && deno fmt --check --config supabase/functions/deno.json supabase/functions scripts",
+    "fmt": "deno fmt --config supabase/functions/deno.json supabase/functions scripts",
+    "deploy": "supabase functions deploy telegram-bot scheduler-tick",
+    "webhook:set": "deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/set-webhook.ts"
+  },
+  "devDependencies": {
+    "deno": "^2.9.6",
+    "supabase": "^2.122.0"
+  }
+}
