@@ -21,6 +21,7 @@
     "cloud:dev:deploy": "set -a && . ./.env.dev && set +a && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" -p \"$SUPABASE_DB_PASSWORD\" && supabase db push -p \"$SUPABASE_DB_PASSWORD\" --yes && supabase functions deploy telegram-bot scheduler-tick api --project-ref \"$SUPABASE_PROJECT_REF\" --use-api",
     "cloud:dev:secrets": "set -a && . ./.env.dev && set +a && supabase secrets set --env-file supabase/functions/.env --project-ref \"$SUPABASE_PROJECT_REF\"",
     "cloud:dev:webhook": "set -a && . ./.env.dev && . supabase/functions/.env && set +a && PROJECT_REF=\"$SUPABASE_PROJECT_REF\" deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/set-webhook.ts",
+    "cloud:dev:due": "set -a && . ./.env.dev && eval \"$(supabase projects api-keys --project-ref \"$SUPABASE_PROJECT_REF\" -o env)\" && SUPABASE_URL=\"https://$SUPABASE_PROJECT_REF.supabase.co\" && set +a && deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/dev-due.ts",
     "webhook:set": "deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/set-webhook.ts"
   },
   "devDependencies": {

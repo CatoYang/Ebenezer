@@ -119,6 +119,7 @@ SUPABASE_ACCESS_TOKEN=sbp_…   # Account → Access Tokens; keeps this repo off
 | --- | --- |
 | `npm run cloud:dev:deploy` | Link, push new migrations, deploy both functions |
 | `npm run cloud:dev:secrets` | Copy `supabase/functions/.env` (bot token, secrets, `MINIAPP_URL`) to the cloud functions |
+| `npm run cloud:dev:due` | Make your pending dev follow-ups due now; the cloud scheduler sends them within 5 minutes |
 | `npm run cloud:dev:webhook` | Point the dev bot at the cloud function, set its commands and Open button (also after `bot:dev`) |
 
 ### First-time setup of an environment

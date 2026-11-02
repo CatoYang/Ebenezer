@@ -67,7 +67,7 @@ miniapp/                       npm workspace: React 18 + Vite + @telegram-apps/t
 .github/workflows/miniapp.yml  build + publish the Mini App to GitHub Pages on push to main
 scripts/
   dev-bot.ts                   local long-polling bot + scheduler every minute, against local Supabase
-  dev-due.ts                   local only: make all pending follow-ups due now
+  dev-due.ts                   testing: make pending follow-ups due now (local stack or cloud dev only)
   miniapp-tunnel.ts            Vite + Cloudflare tunnel; points the DEV bot's Open button at it
   set-webhook.ts               register webhook + command menu for a deployed env
 docs/                          PLAN.md, SETUP.md
@@ -89,6 +89,7 @@ npm run fmt
 npm run deploy         # deploy both functions to the linked project
 npm run cloud:dev:deploy    # cloud dev: link + db push + deploy (reads git-ignored .env.dev)
 npm run cloud:dev:webhook   # point the dev bot back at the cloud (bot:dev removes the webhook)
+npm run cloud:dev:due       # make pending follow-ups due now on the cloud dev project (refuses other projects)
 npm run miniapp:tunnel      # develop the Mini App inside Telegram (talks to the cloud dev api)
 npm run miniapp:build       # production build into miniapp/dist
 ```
