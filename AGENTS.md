@@ -55,12 +55,14 @@ supabase/
       requests.ts              parseRequest: "Sarah – surgery" → title + details
       context.ts db.ts env.ts telegram.ts
     telegram-bot/index.ts      webhook entry
-    scheduler-tick/            cron entry + follow_ups.ts + nudges.ts
+    scheduler-tick/            cron entry + follow_ups.ts + weekly_summaries.ts + nudges.ts
     api/                       Mini App API: index.ts (auth, CORS) + routes.ts (endpoints)
     _shared/telegram_auth.ts   verifyInitData (HMAC with the bot token, 24 h max age)
 miniapp/                       npm workspace: React 18 + Vite + @telegram-apps/telegram-ui
   src/App.tsx                  status + navigation (tabs: Praying for, Stones; detail screens)
-  src/screens/                 PrayingFor, AddRequest, RequestDetail, AnswerRequest, Stones (+ StoneNote)
+  src/screens/                 PrayingFor, AddRequest, RequestDetail, AnswerRequest, Stones (+ StoneNote),
+                               Journey, Settings
+  src/calendar.ts              Journey calendar grid (pure; tested with Deno in calendar_test.ts)
   src/telegram.ts              typed window.Telegram.WebApp, useBackButton, useMainButton, haptics
   src/api.ts  src/config.ts    fetch client (Authorization: tma <initData>); API_URL (VITE_API_URL)
   src/text.ts                  app wording shared across screens (intervals, verse)
@@ -82,7 +84,7 @@ npm run bot:dev        # run the bot locally with polling + scheduler (needs sup
 npm run dev:due        # make pending follow-ups due now (local), to test the follow-up loop
 npx supabase migration up --local   # apply new migrations without wiping local data
 npm test               # unit (deno test) + database (supabase test db)
-npm run test:unit      # deno tests only: supabase/functions/**/*_test.ts
+npm run test:unit      # deno tests only: supabase/functions/**/*_test.ts and miniapp/src/*_test.ts
 npm run test:db        # pgTAP only
 npm run check          # deno check + lint + fmt --check
 npm run fmt
@@ -100,11 +102,11 @@ Run `npm run check` and `npm test` before calling work done.
 
 | Table | Notes |
 | --- | --- |
-| `users` | `telegram_user_id` unique; `timezone` (default `Asia/Singapore`); `reminder_time` (local `time`, null until chosen); `nudges_enabled`; `privacy_accepted_at`; `awaiting` (jsonb, the one pending free-text prompt); `blocked_at` |
+| `users` | `telegram_user_id` unique; `timezone` (default `Asia/Singapore`); `reminder_time` (local `time`, null until chosen); `nudges_enabled`; `weekly_summary_enabled`; `privacy_accepted_at`; `awaiting` (jsonb, the one pending free-text prompt); `blocked_at` |
 | `prayer_requests` | `title` (who/what), `details`, `status` active/answered/closed, `follow_up_days`, `answer_note` |
 | `follow_ups` | `due_at`, `status` pending/sent/responded/cancelled, `response`; **unique open follow-up per request** |
 | `prayer_logs` | one row per prayer; `source` command/nudge/request/follow_up/miniapp. Basis for all stats |
-| `notifications` | scheduled sends; unique (`user_id`, `kind`, `period_key`) makes the scheduler idempotent |
+| `notifications` | scheduled sends (`nudge`: local date; `weekly_digest`: ISO week of the week summarised); unique (`user_id`, `kind`, `period_key`) makes the scheduler idempotent |
 | `processed_updates` | Telegram `update_id`s already handled (pruned after 3 days by cron) |
 
 SQL functions (all state changes are single calls, guarded by user id and status):
@@ -112,7 +114,10 @@ SQL functions (all state changes are single calls, guarded by user id and status
 - `format_local(ts, tz)`: "Tue 10 Nov, 9:00 pm"
 - `create_prayer_request`, `schedule_follow_up` (null days = don't check in), `respond_follow_up`
   (answered / still_praying / later / stop; no rows = stale or double tap), `list_active_requests`
-- `claim_due_follow_ups`, `claim_due_nudges` (scheduler claims)
+- `update_user_settings` (null = unchanged; moves pending follow-ups to a new time/timezone; 22023 for an
+  unknown timezone). Both the bot and the api change settings only through this.
+- `prayer_streaks`, `journey` (JSON for the Journey screen)
+- `claim_due_follow_ups`, `claim_due_weekly_summaries` (takes `p_now` for tests), `claim_due_nudges`
 
 Do time-zone maths and date formatting in SQL (`at time zone`, `format_local`), not in JS. Every
 migration must end by revoking function `execute` from `public, anon, authenticated`.
@@ -135,6 +140,8 @@ migration must end by revoking function `execute` from `public, anon, authentica
   `on conflict do nothing`, or an update guarded by `status` / `FOR UPDATE SKIP LOCKED`. On a failed send,
   release the claim so the next tick retries it. On a 403, mark the user blocked (`sendOrMarkBlocked`).
 - Never send to users with `blocked_at` set or `privacy_accepted_at` null.
+- Database tests run against the local DB, which may hold real dev users: scope assertions to the test's
+  own rows (e.g. `telegram_user_id < 100`), and pass `p_now` where a function takes it.
 
 **Security and privacy**
 - `telegram-bot` checks `X-Telegram-Bot-Api-Secret-Token` before doing anything, because grammY's own

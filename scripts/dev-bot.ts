@@ -9,6 +9,7 @@ import { createDb } from "../supabase/functions/_shared/db.ts";
 import { requireEnv } from "../supabase/functions/_shared/env.ts";
 import { sendDueFollowUps } from "../supabase/functions/scheduler-tick/follow_ups.ts";
 import { sendDueNudges } from "../supabase/functions/scheduler-tick/nudges.ts";
+import { sendDueWeeklySummaries } from "../supabase/functions/scheduler-tick/weekly_summaries.ts";
 
 if (!requireEnv("SUPABASE_URL").startsWith("http://127.0.0.1")) {
   throw new Error("dev-bot only runs against the local Supabase stack");
@@ -21,8 +22,11 @@ bot.catch((err) => console.error("update failed:", err.error));
 async function tick() {
   try {
     const followUps = await sendDueFollowUps(db, bot.api);
+    const weeklySummaries = await sendDueWeeklySummaries(db, bot.api);
     const nudges = await sendDueNudges(db, bot.api);
-    if (followUps.due || nudges.due) console.log("scheduler:", JSON.stringify({ followUps, nudges }));
+    if (followUps.due || weeklySummaries.due || nudges.due) {
+      console.log("scheduler:", JSON.stringify({ followUps, weeklySummaries, nudges }));
+    }
   } catch (err) {
     console.error("scheduler failed:", err instanceof Error ? err.message : err);
   }

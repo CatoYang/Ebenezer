@@ -22,6 +22,26 @@ export interface Stone {
   prayer_count: number;
 }
 
+export interface Settings {
+  first_name: string | null;
+  timezone: string;
+  reminder_time: string | null; // "HH:MM"
+  nudges_enabled: boolean;
+  weekly_summary_enabled: boolean;
+}
+
+export interface Journey {
+  today: string; // the user's local date, "YYYY-MM-DD"
+  days_this_week: number;
+  current_streak: number;
+  best_streak: number;
+  total_prayers: number;
+  total_days: number;
+  active_requests: number;
+  answered_requests: number;
+  calendar: { date: string; count: number }[];
+}
+
 export class ApiError extends Error {
   constructor(public status: number, public code: string) {
     super(code);
@@ -40,11 +60,9 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 }
 
 export const api = {
-  me: () =>
-    request<{ first_name: string | null; reminder_time: string | null; nudges_enabled: boolean; timezone: string }>(
-      "GET",
-      "/me",
-    ),
+  me: () => request<Settings>("GET", "/me"),
+  updateSettings: (changes: Partial<Omit<Settings, "first_name">>) => request<Settings>("PATCH", "/me", changes),
+  journey: () => request<Journey>("GET", "/journey"),
   requests: () => request<{ requests: PrayerRequest[]; names: string[] }>("GET", "/requests"),
   addRequest: (title: string, details: string | null, follow_up_days: number | null) =>
     request<{ id: string }>("POST", "/requests", { title, details, follow_up_days }),

@@ -13,7 +13,7 @@
     "miniapp:tunnel": "deno run --allow-net --allow-env --allow-run --config supabase/functions/deno.json --env-file=supabase/functions/.env scripts/miniapp-tunnel.ts",
     "functions:serve": "supabase functions serve --env-file supabase/functions/.env",
     "test": "npm run test:unit && npm run test:db",
-    "test:unit": "deno test --config supabase/functions/deno.json supabase/functions",
+    "test:unit": "deno test --config supabase/functions/deno.json supabase/functions miniapp/src",
     "test:db": "supabase test db",
     "check": "deno check --config supabase/functions/deno.json supabase/functions/*/index.ts scripts/*.ts && deno lint --config supabase/functions/deno.json supabase/functions scripts && deno fmt --check --config supabase/functions/deno.json supabase/functions scripts && npm run typecheck --workspace miniapp",
     "fmt": "deno fmt --config supabase/functions/deno.json supabase/functions scripts",

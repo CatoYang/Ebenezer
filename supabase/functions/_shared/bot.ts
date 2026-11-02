@@ -10,6 +10,7 @@ import {
   setNudges,
   setTime,
   settingsCommand,
+  setWeeklySummary,
   showSettings,
   showTimeHours,
   showTimePresets,
@@ -135,6 +136,9 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
         break;
       case "settings_home":
         await showSettings(ctx);
+        break;
+      case "weekly_summary":
+        await setWeeklySummary(ctx, cb.enabled);
         break;
       case "nudge_reply":
         await nudgeReply(ctx, cb.prayed);

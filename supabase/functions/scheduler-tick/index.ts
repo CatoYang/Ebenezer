@@ -6,6 +6,7 @@ import { createDb } from "../_shared/db.ts";
 import { requireEnv, secretsMatch } from "../_shared/env.ts";
 import { sendDueFollowUps } from "./follow_ups.ts";
 import { sendDueNudges } from "./nudges.ts";
+import { sendDueWeeklySummaries } from "./weekly_summaries.ts";
 
 const db = createDb();
 const api = new Api(requireEnv("BOT_TOKEN"));
@@ -17,6 +18,7 @@ Deno.serve(async (req) => {
     return new Response("Unauthorized", { status: 401 });
   }
   const followUps = await sendDueFollowUps(db, api);
+  const weeklySummaries = await sendDueWeeklySummaries(db, api); // before Monday's nudge
   const nudges = await sendDueNudges(db, api);
-  return Response.json({ followUps, nudges });
+  return Response.json({ followUps, weeklySummaries, nudges });
 });

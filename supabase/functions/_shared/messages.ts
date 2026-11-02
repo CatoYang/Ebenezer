@@ -40,6 +40,14 @@ const truncate = (text: string, max: number) => (text.length > max ? `${text.sli
 
 const times = (n: number) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
 
+export interface WeeklySummary {
+  week_label: string;
+  days_prayed: number;
+  answered_titles: string[];
+  active_requests: number;
+  current_streak: number;
+}
+
 export interface ListedRequest {
   title: string;
   details: string | null;
@@ -78,10 +86,36 @@ export const msg = {
     `/list — what you're praying for\n/prayed — record that you prayed\n` +
     `/settings — change your reminder time\n/deletemydata — delete everything I've stored`,
 
-  settings: (user: Pick<UserRow, "reminder_time" | "nudges_enabled" | "timezone">) =>
+  settings: (
+    user: Pick<UserRow, "reminder_time" | "nudges_enabled" | "weekly_summary_enabled" | "timezone">,
+  ) =>
     `Your settings\n\n` +
     `Reminder time: ${user.reminder_time ? formatTime(user.reminder_time) : "not set"} (${user.timezone})\n` +
-    `Daily reminder: ${user.nudges_enabled ? "on" : "off"}`,
+    `Daily reminder: ${user.nudges_enabled ? "on" : "off"}\n` +
+    `Weekly summary: ${user.weekly_summary_enabled ? "on, Mondays at your reminder time" : "off"}\n\n` +
+    `To change your timezone, use the app (/app).`,
+
+  weeklySummary: (s: WeeklySummary) => {
+    const lines = [`Your week, ${s.week_label}`, ""];
+    if (s.days_prayed === 0) {
+      lines.push("Last week was quiet. A moment of prayer today is a good place to start again.");
+    } else {
+      lines.push(
+        `You prayed on ${s.days_prayed} of 7 days.` +
+          (s.current_streak > 1 ? ` Current streak: ${s.current_streak} days.` : ""),
+      );
+    }
+    if (s.answered_titles.length > 0) {
+      lines.push("", `Answered: ${s.answered_titles.join(", ")}. Thanks be to God!`);
+    }
+    if (s.active_requests > 0) {
+      lines.push(
+        "",
+        `Still praying for ${s.active_requests} ${s.active_requests === 1 ? "request" : "requests"}.`,
+      );
+    }
+    return lines.join("\n");
+  },
 
   nudge: "Have you had a moment to pray today?",
   nudgePrayed: "Have you had a moment to pray today?\n\nYes. Logged for today.",
@@ -167,6 +201,8 @@ export const label = {
   changeTime: "Change time",
   nudgesTurnOn: "Turn daily reminder on",
   nudgesTurnOff: "Turn daily reminder off",
+  weeklyTurnOn: "Turn weekly summary on",
+  weeklyTurnOff: "Turn weekly summary off",
   prayed: "Yes, I prayed",
   notYet: "Not yet",
   days3: "3 days",

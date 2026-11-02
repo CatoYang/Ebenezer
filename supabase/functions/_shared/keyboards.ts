@@ -38,14 +38,20 @@ export const nudgePrefKeyboard = () =>
     btn(label.nudgesNo, { kind: "nudges", origin: "onboarding", enabled: false }),
   ]]);
 
-export const settingsKeyboard = (nudgesEnabled: boolean) =>
+export const settingsKeyboard = (user: { nudges_enabled: boolean; weekly_summary_enabled: boolean }) =>
   InlineKeyboard.from([
     [btn(label.changeTime, { kind: "time_presets", origin: "settings" })],
     [
-      btn(nudgesEnabled ? label.nudgesTurnOff : label.nudgesTurnOn, {
+      btn(user.nudges_enabled ? label.nudgesTurnOff : label.nudgesTurnOn, {
         kind: "nudges",
         origin: "settings",
-        enabled: !nudgesEnabled,
+        enabled: !user.nudges_enabled,
+      }),
+    ],
+    [
+      btn(user.weekly_summary_enabled ? label.weeklyTurnOff : label.weeklyTurnOn, {
+        kind: "weekly_summary",
+        enabled: !user.weekly_summary_enabled,
       }),
     ],
   ]);

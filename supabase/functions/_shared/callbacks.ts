@@ -11,6 +11,7 @@ export type Callback =
   | { kind: "time_set"; origin: Origin; time: string } // "HH:MM"
   | { kind: "nudges"; origin: Origin; enabled: boolean }
   | { kind: "settings_home" }
+  | { kind: "weekly_summary"; enabled: boolean }
   | { kind: "nudge_reply"; prayed: boolean }
   | { kind: "delete"; confirm: boolean }
   | { kind: "interval"; requestId: string; days: FollowUpDays | null } // null = don't check in
@@ -56,6 +57,8 @@ export function encode(cb: Callback): string {
       return `nudges:${ORIGIN_CODE[cb.origin]}:${cb.enabled ? "y" : "n"}`;
     case "settings_home":
       return "settings";
+    case "weekly_summary":
+      return `weekly:${cb.enabled ? "y" : "n"}`;
     case "nudge_reply":
       return `nudge:${cb.prayed ? "y" : "n"}`;
     case "delete":
@@ -92,6 +95,8 @@ export function parse(data: string): Callback | null {
     }
     case "settings":
       return a === undefined ? { kind: "settings_home" } : null;
+    case "weekly":
+      return has(YES_NO, a) ? { kind: "weekly_summary", enabled: YES_NO[a] } : null;
     case "nudge":
       return has(YES_NO, a) ? { kind: "nudge_reply", prayed: YES_NO[a] } : null;
     case "delete":

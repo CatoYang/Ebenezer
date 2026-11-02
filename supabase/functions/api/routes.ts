@@ -2,6 +2,8 @@
 // SQL functions, which also check ownership and status.
 //
 //   GET   /me                        the user's name and settings
+//   PATCH /me                        { reminder_time?: "HH:MM", nudges_enabled?, weekly_summary_enabled?, timezone? }
+//   GET   /journey                   streaks, totals and a calendar of days prayed
 //   GET   /requests                  active requests + names prayed for before (suggestions)
 //   POST  /requests                  { title, details?, follow_up_days? }
 //   PATCH /requests/:id              { title, details? }
@@ -52,6 +54,16 @@ function titleAndDetails(body: Body) {
   return { title, details };
 }
 
+function settings(user: UserRow) {
+  return {
+    first_name: user.first_name,
+    timezone: user.timezone,
+    reminder_time: user.reminder_time?.slice(0, 5) ?? null,
+    nudges_enabled: user.nudges_enabled,
+    weekly_summary_enabled: user.weekly_summary_enabled,
+  };
+}
+
 // ---- routing -------------------------------------------------------------------------
 
 export async function route(
@@ -72,14 +84,33 @@ export async function route(
   };
 
   // GET /me
-  if (method === "GET" && resource === "me" && !id) {
-    return ok({
-      first_name: user.first_name,
-      timezone: user.timezone,
-      reminder_time: user.reminder_time?.slice(0, 5) ?? null,
-      nudges_enabled: user.nudges_enabled,
+  if (method === "GET" && resource === "me" && !id) return ok(settings(user));
+
+  // PATCH /me
+  if (method === "PATCH" && resource === "me" && !id) {
+    const time = body.reminder_time;
+    const tz = body.timezone;
+    if (time !== undefined && (typeof time !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time))) {
+      return bad("invalid_reminder_time");
+    }
+    if (tz !== undefined && (typeof tz !== "string" || tz.length > 64)) return bad("invalid_timezone");
+    for (const key of ["nudges_enabled", "weekly_summary_enabled"]) {
+      if (body[key] !== undefined && typeof body[key] !== "boolean") return bad(`invalid_${key}`);
+    }
+    const { data, error } = await db.rpc("update_user_settings", {
+      p_user_id: user.id,
+      p_reminder_time: time ?? null,
+      p_nudges_enabled: body.nudges_enabled ?? null,
+      p_timezone: tz ?? null,
+      p_weekly_summary: body.weekly_summary_enabled ?? null,
     });
+    if (error?.code === "22023") return bad("invalid_timezone");
+    if (error) throw error;
+    return ok(settings(data as UserRow));
   }
+
+  // GET /journey
+  if (method === "GET" && resource === "journey" && !id) return ok(await call("journey", {}));
 
   if (resource === "requests") {
     // GET /requests

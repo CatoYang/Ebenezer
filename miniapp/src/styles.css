@@ -73,3 +73,99 @@ main.with-tabbar {
   font: inherit;
   cursor: pointer;
 }
+
+/* Journey: this week */
+.week-dots {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.week-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--tg-theme-hint-color, #999);
+  box-sizing: border-box;
+}
+
+.dot.filled {
+  background: var(--tg-theme-button-color, #2481cc);
+  border-color: var(--tg-theme-button-color, #2481cc);
+}
+
+.dot.today {
+  box-shadow: 0 0 0 3px var(--tg-theme-secondary-bg-color, #eee), 0 0 0 5px var(--tg-theme-button-color, #2481cc);
+}
+
+.dot.future {
+  opacity: 0.35;
+}
+
+.dot-label {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* Journey: 13-week calendar */
+.calendar {
+  display: flex;
+  gap: 3px;
+  padding: 12px 16px 16px;
+  overflow-x: auto;
+}
+
+.calendar-weekdays,
+.calendar-week {
+  display: grid;
+  grid-template-rows: 14px repeat(7, 1fr);
+  gap: 3px;
+}
+
+.calendar-weekdays span {
+  font-size: 10px;
+  line-height: 18px;
+  opacity: 0.6;
+  padding-right: 2px;
+}
+
+.calendar-weekdays span:first-child {
+  grid-row: 2;
+}
+
+.calendar-month {
+  font-size: 10px;
+  opacity: 0.6;
+  white-space: nowrap;
+  width: 18px;
+}
+
+.calendar-day {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--tg-theme-hint-color, #999);
+  opacity: 0.15;
+}
+
+.calendar-day.level-1 { background: var(--tg-theme-button-color, #2481cc); opacity: 0.45; }
+.calendar-day.level-2 { background: var(--tg-theme-button-color, #2481cc); opacity: 0.7; }
+.calendar-day.level-3 { background: var(--tg-theme-button-color, #2481cc); opacity: 1; }
+.calendar-day.today { outline: 2px solid var(--tg-theme-text-color, #000); outline-offset: 1px; }
+.calendar-day.future { visibility: hidden; }
+
+/* Settings */
+.time-input {
+  font: inherit;
+  color: var(--tg-theme-link-color, #2481cc);
+  background: transparent;
+  border: none;
+  text-align: right;
+}

@@ -3,12 +3,21 @@ import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type PrayerRequest, type Stone } from "./api";
 import { AddRequest } from "./screens/AddRequest";
 import { AnswerRequest } from "./screens/AnswerRequest";
+import { Journey } from "./screens/Journey";
 import { PrayingFor } from "./screens/PrayingFor";
 import { RequestDetail } from "./screens/RequestDetail";
+import { Settings } from "./screens/Settings";
 import { StoneNote, Stones } from "./screens/Stones";
 import { inTelegram, platform, tg } from "./telegram";
 
-type Tab = "praying" | "stones";
+type Tab = "praying" | "stones" | "journey" | "settings";
+
+const TABS: { id: Tab; text: string; icon: string }[] = [
+  { id: "praying", text: "Praying for", icon: "✦" },
+  { id: "stones", text: "Stones", icon: "◆" },
+  { id: "journey", text: "Journey", icon: "▦" },
+  { id: "settings", text: "Settings", icon: "⚙" },
+];
 type Screen =
   | { name: "list" }
   | { name: "add" }
@@ -96,8 +105,12 @@ export function App() {
         onAdd={() => setScreen({ name: "add" })}
       />
     );
-  } else {
+  } else if (tab === "stones") {
     content = <Stones stones={stones} onOpen={(id) => setScreen({ name: "stone", id })} />;
+  } else if (tab === "journey") {
+    content = <Journey />;
+  } else {
+    content = <Settings />;
   }
 
   const showTabs = status === "ready" && screen.name === "list";
@@ -107,12 +120,11 @@ export function App() {
       <main className={showTabs ? "with-tabbar" : undefined}>{content}</main>
       {showTabs && (
         <Tabbar>
-          <Tabbar.Item text="Praying for" selected={tab === "praying"} onClick={() => setTab("praying")}>
-            <span className="tab-icon">✦</span>
-          </Tabbar.Item>
-          <Tabbar.Item text="Stones" selected={tab === "stones"} onClick={() => setTab("stones")}>
-            <span className="tab-icon">◆</span>
-          </Tabbar.Item>
+          {TABS.map((t) => (
+            <Tabbar.Item key={t.id} text={t.text} selected={tab === t.id} onClick={() => setTab(t.id)}>
+              <span className="tab-icon">{t.icon}</span>
+            </Tabbar.Item>
+          ))}
         </Tabbar>
       )}
     </AppRoot>

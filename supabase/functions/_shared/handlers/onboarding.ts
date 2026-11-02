@@ -1,7 +1,7 @@
 // /start, privacy consent, reminder-time picker, and /settings.
 
 import type { Origin } from "../callbacks.ts";
-import { type BotContext, editFromButton, updateUser } from "../context.ts";
+import { type BotContext, editFromButton, saveSettings, updateUser } from "../context.ts";
 import {
   consentKeyboard,
   nudgePrefKeyboard,
@@ -45,7 +45,7 @@ export async function showTimeHours(ctx: BotContext, origin: Origin) {
 }
 
 export async function setTime(ctx: BotContext, origin: Origin, time: string) {
-  await updateUser(ctx, { reminder_time: time });
+  await saveSettings(ctx, { reminder_time: time });
   if (origin === "onboarding") {
     await editFromButton(ctx, msg.askNudges(time), nudgePrefKeyboard());
   } else {
@@ -54,7 +54,7 @@ export async function setTime(ctx: BotContext, origin: Origin, time: string) {
 }
 
 export async function setNudges(ctx: BotContext, origin: Origin, enabled: boolean) {
-  await updateUser(ctx, { nudges_enabled: enabled });
+  await saveSettings(ctx, { nudges_enabled: enabled });
   if (origin === "onboarding") {
     await editFromButton(ctx, msg.onboardingDone(ctx.user));
   } else {
@@ -63,9 +63,14 @@ export async function setNudges(ctx: BotContext, origin: Origin, enabled: boolea
 }
 
 export async function settingsCommand(ctx: BotContext) {
-  await ctx.reply(msg.settings(ctx.user), { reply_markup: settingsKeyboard(ctx.user.nudges_enabled) });
+  await ctx.reply(msg.settings(ctx.user), { reply_markup: settingsKeyboard(ctx.user) });
 }
 
 export async function showSettings(ctx: BotContext) {
-  await editFromButton(ctx, msg.settings(ctx.user), settingsKeyboard(ctx.user.nudges_enabled));
+  await editFromButton(ctx, msg.settings(ctx.user), settingsKeyboard(ctx.user));
+}
+
+export async function setWeeklySummary(ctx: BotContext, enabled: boolean) {
+  await saveSettings(ctx, { weekly_summary_enabled: enabled });
+  await showSettings(ctx);
 }

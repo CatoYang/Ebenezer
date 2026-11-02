@@ -22,6 +22,22 @@ export async function editFromButton(
   }
 }
 
+/** Changes settings via update_user_settings, which also moves pending follow-ups to a new time. */
+export async function saveSettings(
+  ctx: BotContext,
+  settings: { reminder_time?: string; nudges_enabled?: boolean; weekly_summary_enabled?: boolean },
+): Promise<UserRow> {
+  const { data, error } = await ctx.db.rpc("update_user_settings", {
+    p_user_id: ctx.user.id,
+    p_reminder_time: settings.reminder_time ?? null,
+    p_nudges_enabled: settings.nudges_enabled ?? null,
+    p_weekly_summary: settings.weekly_summary_enabled ?? null,
+  });
+  if (error) throw error;
+  ctx.user = data as UserRow;
+  return ctx.user;
+}
+
 export async function updateUser(ctx: BotContext, patch: Partial<UserRow>): Promise<UserRow> {
   const { data, error } = await ctx.db.from("users").update(patch).eq("id", ctx.user.id).select().single();
   if (error) throw error;

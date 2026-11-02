@@ -23,6 +23,7 @@ export interface UserRow {
   timezone: string;
   reminder_time: string | null; // "HH:MM:SS"
   nudges_enabled: boolean;
+  weekly_summary_enabled: boolean;
   privacy_accepted_at: string | null;
   awaiting: Awaiting | null;
   blocked_at: string | null;

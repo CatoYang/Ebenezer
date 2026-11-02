@@ -13,6 +13,8 @@ const ALL: Callback[] = [
   { kind: "nudges", origin: "onboarding", enabled: true },
   { kind: "nudges", origin: "settings", enabled: false },
   { kind: "settings_home" },
+  { kind: "weekly_summary", enabled: true },
+  { kind: "weekly_summary", enabled: false },
   { kind: "nudge_reply", prayed: true },
   { kind: "nudge_reply", prayed: false },
   { kind: "delete", confirm: true },

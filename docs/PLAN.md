@@ -58,9 +58,14 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
       change check-in interval; mark answered with a note; stop praying for it
 - [x] **Stones**: answered prayers with notes, newest first; edit a note
 - [x] GitHub Pages deploy on push; local development inside Telegram via a Cloudflare tunnel
-- [ ] **Journey**: days prayed this week, streak, calendar of days prayed
-- [ ] **Settings** screen: reminder time, daily reminder, timezone (detect with `Intl`; Phase 1 assumes `Asia/Singapore`)
-- [ ] Weekly personal digest (Monday morning, user's local time)
+- [x] **Journey**: this week's days, current and best streak (counted in the user's timezone; still counts
+      from yesterday until today ends), totals, 13-week calendar of days prayed
+- [x] **Settings** (app and `/settings`): reminder time (any minute in the app), daily reminder, weekly summary,
+      timezone (app offers the device's). Changing time or timezone moves pending follow-ups to the new time,
+      same local day.
+- [x] **Weekly summary**: Mondays at the reminder time (8 am if none). Last week's days prayed, streak,
+      prayers answered (by name), active requests, Open button. Only for users with an active request or a
+      prayer in the last 4 weeks, who joined before this week. Sent before Monday's daily reminder.
 
 ### Phase 3 — Connections (to be designed)
 A user can invite someone to shepherd or oversee them. Questions to settle first:
