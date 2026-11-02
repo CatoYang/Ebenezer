@@ -1,5 +1,8 @@
 # Setup
 
+First-time setup. For day-to-day running (changes, health checks, troubleshooting, secrets, backups) see
+[MAINTENANCE.md](MAINTENANCE.md).
+
 Two parts: **accounts** (once, owned by the organisation rather than a person) and **environments**
 (dev first, then prod). Never paste tokens or secrets into chat, commits or issues. They go in the
 password manager, `supabase/functions/.env` (dev, git-ignored) or `supabase secrets set`.

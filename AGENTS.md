@@ -21,6 +21,8 @@ later, not-yet-designed phase. Don't add group or leader concepts until then.
 
 - Plan, phases and status: [docs/PLAN.md](docs/PLAN.md). This is the source of truth.
 - Accounts, local dev and deploy: [docs/SETUP.md](docs/SETUP.md)
+- Running it: [docs/MAINTENANCE.md](docs/MAINTENANCE.md) · for users: [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+  When behaviour or commands change, update the user guide and runbook too.
 - Original design (architecture background; superseded where PLAN.md differs):
   Claude Doc "Prayer Companion – System Design", https://claude.ai/artifact/YRizw6dG287Y2LXcTKYEK7
 
@@ -72,7 +74,8 @@ scripts/
   dev-due.ts                   testing: make pending follow-ups due now (local stack or cloud dev only)
   miniapp-tunnel.ts            Vite + Cloudflare tunnel; points the DEV bot's Open button at it
   set-webhook.ts               register webhook + command menu for a deployed env
-docs/                          PLAN.md, SETUP.md
+docs/                          PLAN.md, SETUP.md, MAINTENANCE.md (runbook), USER_GUIDE.md (for users)
+README.md                      overview for the repo
 ```
 
 ## Commands
@@ -92,6 +95,7 @@ npm run deploy         # deploy both functions to the linked project
 npm run cloud:dev:deploy    # cloud dev: link + db push + deploy (reads git-ignored .env.dev)
 npm run cloud:dev:webhook   # point the dev bot back at the cloud (bot:dev removes the webhook)
 npm run cloud:dev:due       # make pending follow-ups due now on the cloud dev project (refuses other projects)
+npm run cloud:dev:backup    # data-only dump into backups/ (git-ignored; contains prayer content)
 npm run miniapp:tunnel      # develop the Mini App inside Telegram (talks to the cloud dev api)
 npm run miniapp:build       # production build into miniapp/dist
 ```

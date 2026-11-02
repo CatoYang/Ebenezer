@@ -22,6 +22,7 @@
     "cloud:dev:secrets": "set -a && . ./.env.dev && set +a && supabase secrets set --env-file supabase/functions/.env --project-ref \"$SUPABASE_PROJECT_REF\"",
     "cloud:dev:webhook": "set -a && . ./.env.dev && . supabase/functions/.env && set +a && PROJECT_REF=\"$SUPABASE_PROJECT_REF\" deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/set-webhook.ts",
     "cloud:dev:due": "set -a && . ./.env.dev && eval \"$(supabase projects api-keys --project-ref \"$SUPABASE_PROJECT_REF\" -o env)\" && SUPABASE_URL=\"https://$SUPABASE_PROJECT_REF.supabase.co\" && set +a && deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/dev-due.ts",
+    "cloud:dev:backup": "set -a && . ./.env.dev && set +a && mkdir -p backups && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" -p \"$SUPABASE_DB_PASSWORD\" >/dev/null && supabase db dump --linked -p \"$SUPABASE_DB_PASSWORD\" --data-only -f \"backups/ebenezer-dev-$(date +%Y-%m-%d-%H%M)-data.sql\" && chmod 600 backups/*.sql && ls -l backups | tail -3",
     "webhook:set": "deno run --allow-net --allow-env --config supabase/functions/deno.json scripts/set-webhook.ts"
   },
   "devDependencies": {

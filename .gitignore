@@ -9,3 +9,6 @@ supabase/functions/.env
 
 # Mini App build output (published by GitHub Actions)
 miniapp/dist/
+
+# Database dumps contain prayer content: keep them out of git (store encrypted)
+backups/
