@@ -106,7 +106,9 @@ the published app. A new tunnel can take up to a minute to start answering.
 
 ### Cloud dev (set up 2026-11-03)
 
-Bot: **Ebenezer, `@EbenezerStonesBot`** (its token is `BOT_TOKEN` in `supabase/functions/.env`). Earlier test
+Bot: **Ebenezer, `@EbenezerStonesBot`** (its token is `BOT_TOKEN` in `supabase/functions/.env`). This is
+the **real bot** the congregation will use. Until a prod project exists it runs against dev; at launch it
+moves to prod (new secrets + webhook) and a separate test bot takes over dev. Earlier test
 bots `@PrayerEchoDevBot` and `@EbenezerDevBot` are retired; the webhook secret was rotated so the cloud
 refuses them.
 

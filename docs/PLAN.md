@@ -31,7 +31,8 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
 ### Phase 0 — Accounts and foundation
 - [x] Repo scaffold: Supabase project, migration, functions, scripts, tests
 - [ ] Organisation-owned accounts: email, password manager, Telegram, GitHub, Supabase ([SETUP.md](SETUP.md))
-- [ ] Dev and prod bots created in BotFather
+- [x] Real bot: Ebenezer, `@EbenezerStonesBot` (on the dev project until prod exists)
+- [ ] Separate test bot for dev, once the real bot moves to prod
 - [ ] Dev Supabase project linked, migration pushed, functions deployed, webhook set
 
 ### Phase 1 — Personal MVP (bot + scheduler, no Mini App)
