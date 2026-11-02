@@ -83,12 +83,32 @@ Other commands:
 | `npm run functions:serve` | Run the Edge Functions locally (for testing `scheduler-tick` with curl) |
 | `npm run db:stop` | Stop the local Docker stack |
 
-`npm run bot:dev` deletes the dev bot's webhook while it runs. After using it, run `npm run webhook:set`
-again if the deployed dev function should receive messages.
+**Only one copy of a bot can receive messages.** `npm run bot:dev` deletes the dev bot's webhook, so the
+cloud copy goes quiet while you test locally. Afterwards, run `npm run cloud:dev:webhook` to hand the bot
+back to the cloud. If the webhook is set while `bot:dev` is running, `bot:dev` stops with a 409 error.
 
 ## Part 3 — Deploy an environment
 
-Do this for dev first, then repeat for prod with the prod bot and prod project.
+### Cloud dev (set up 2026-11-03)
+
+The dev project's ref, database password and a CLI access token for its Supabase account live in
+`.env.dev` at the repo root (git-ignored):
+
+```
+SUPABASE_PROJECT_REF=…
+SUPABASE_DB_PASSWORD=…
+SUPABASE_ACCESS_TOKEN=sbp_…   # Account → Access Tokens; keeps this repo off your personal CLI login
+```
+
+| Command | What it does |
+| --- | --- |
+| `npm run cloud:dev:deploy` | Link, push new migrations, deploy both functions |
+| `npm run cloud:dev:secrets` | Copy `supabase/functions/.env` (bot token, secrets) to the cloud functions |
+| `npm run cloud:dev:webhook` | Point the dev bot at the cloud function (also after using `bot:dev`) |
+
+### First-time setup of an environment
+
+Do this once per environment (it's already done for dev). Repeat for prod with the prod bot and project.
 
 ```bash
 npx supabase login                            # opens a browser; log in as an organisation member

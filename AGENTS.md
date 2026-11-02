@@ -75,6 +75,8 @@ npm run test:db        # pgTAP only
 npm run check          # deno check + lint + fmt --check
 npm run fmt
 npm run deploy         # deploy both functions to the linked project
+npm run cloud:dev:deploy    # cloud dev: link + db push + deploy (reads git-ignored .env.dev)
+npm run cloud:dev:webhook   # point the dev bot back at the cloud (bot:dev removes the webhook)
 ```
 
 Run `npm run check` and `npm test` before calling work done.
