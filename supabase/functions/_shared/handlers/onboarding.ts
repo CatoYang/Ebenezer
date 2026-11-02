@@ -13,7 +13,10 @@ import { msg } from "../messages.ts";
 
 export async function start(ctx: BotContext) {
   if (!ctx.user.privacy_accepted_at) {
-    await ctx.reply(msg.welcome(ctx.user.first_name), { reply_markup: consentKeyboard() });
+    await ctx.reply(msg.welcome(ctx.user.first_name), {
+      parse_mode: "HTML",
+      reply_markup: consentKeyboard(),
+    });
   } else if (!ctx.user.reminder_time) {
     await ctx.reply(msg.askTime, { reply_markup: timePresetsKeyboard("onboarding") });
   } else {
@@ -29,7 +32,7 @@ export async function consent(ctx: BotContext, accept: boolean) {
     return;
   }
   if (!ctx.user.privacy_accepted_at) await updateUser(ctx, { privacy_accepted_at: new Date().toISOString() });
-  await editFromButton(ctx, msg.welcome(ctx.user.first_name));
+  await editFromButton(ctx, msg.welcome(ctx.user.first_name), undefined, { html: true });
   await ctx.reply(msg.askTime, { reply_markup: timePresetsKeyboard("onboarding") });
 }
 

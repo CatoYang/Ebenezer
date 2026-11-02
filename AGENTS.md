@@ -4,12 +4,17 @@ Guidance for coding agents (Claude Code, Codex, etc.) working in this repository
 
 ## Project
 
-**Prayer Echo** is a Telegram bot (and later a Mini App) for personal prayer life. Users record
+**Ebenezer** is a Telegram bot (and later a Mini App) for personal prayer life. Users record
 what they're praying for and when they pray. The bot follows up on each request ("How is Sarah
 doing?") and sends a daily reminder at a time each user chooses.
 
+The name comes from 1 Samuel 7:12, where Samuel sets up a stone of remembrance for answered prayer.
+The welcome message quotes that verse (`SCRIPTURE` in `messages.ts`). The first users are a **Catholic
+congregation**, so Scripture quotes use a Catholic-approved translation (currently ESV wording), and
+wording should suit Catholic prayer life.
+
 The name may change. User-facing text gets it only from `APP_NAME` in `messages.ts`; never hardcode it.
-(The Claude Doc below was written under the earlier name "Prayer Companion".)
+(The Claude Doc below was written under the earlier names "Prayer Companion" and "Prayer Echo".)
 
 **Individual first.** Every user is independent. Connecting users to someone who shepherds them is a
 later, not-yet-designed phase. Don't add group or leader concepts until then.

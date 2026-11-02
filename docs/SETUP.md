@@ -17,7 +17,7 @@ credential lives in a shared vault, and at least two people can get in.
 
 ### 2. Password manager with a shared vault
 - Bitwarden (free for 2 people, discounts for nonprofits) or 1Password.
-- Create a shared collection, e.g. "Prayer Echo". Share it with one other trusted person.
+- Create a shared collection, e.g. "Ebenezer". Share it with one other trusted person.
 - Everything from here goes in it: logins, 2FA backup codes, both bot tokens, webhook and scheduler
   secrets, and the Supabase database passwords.
 
@@ -33,23 +33,23 @@ number. Use a **church-owned number**, not a personal one.
 
 ### 4. Create the two bots (in that Telegram account)
 In a chat with [@BotFather](https://t.me/BotFather):
-1. `/newbot` → name "Prayer Echo (Dev)", username e.g. `<church>PrayerEchoDevBot`. Save the token in the vault.
-2. `/newbot` → name "Prayer Echo", username e.g. `<church>PrayerEchoBot`. Save the token in the vault.
+1. `/newbot` → name "Ebenezer (Dev)", username e.g. `<church>EbenezerDevBot`. Save the token in the vault.
+2. `/newbot` → name "Ebenezer", username e.g. `<church>EbenezerBot`. Save the token in the vault.
 3. For each bot: `/setdescription`, `/setabouttext` and `/setuserpic`. The command list is set by
    `npm run webhook:set`.
 
 ### 5. GitHub organisation
 - Sign in to GitHub as the organisation email → create a **free organisation**, e.g. `<church>-tech`.
 - Invite your personal GitHub account as a second **Owner**.
-- The repo currently lives at https://github.com/CatoYang/Prayer-Echo. Move it into the organisation
+- The repo currently lives at https://github.com/CatoYang/Ebenezer. Move it into the organisation
   with Settings → Transfer ownership; GitHub redirects the old URL.
 
 ### 6. Supabase organisation and projects
 - Sign up at supabase.com with the organisation email (or "Continue with GitHub" as that account).
 - Create an **organisation** named after the church. Invite your personal account as **Owner**.
 - Create two projects in it, both in **Southeast Asia (Singapore)**:
-  - `prayer-echo-dev`
-  - `prayer-echo-prod`
+  - `ebenezer-dev`
+  - `ebenezer-prod`
   Save each database password in the vault.
 - Both can start on the Free plan. Before real users depend on reminders, upgrade **prod** to Pro
   (US$25/month, church card on the organisation's billing). Free projects pause after 7 days of

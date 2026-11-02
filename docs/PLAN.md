@@ -1,4 +1,4 @@
-# Prayer Echo — Plan
+# Ebenezer — Plan
 
 Revised 2026-11-02. This file is the source of truth. It supersedes the original Claude Doc
 ("Prayer Companion – System Design", https://claude.ai/artifact/YRizw6dG287Y2LXcTKYEK7) wherever

@@ -1,7 +1,7 @@
 {
-  "name": "prayer-echo",
+  "name": "ebenezer",
   "private": true,
-  "description": "Prayer Echo: Telegram bot + scheduler on Supabase Edge Functions",
+  "description": "Ebenezer: Telegram bot + scheduler on Supabase Edge Functions",
   "scripts": {
     "db:start": "supabase start -x studio,realtime,storage-api,imgproxy,mailpit,logflare,vector,supavisor,postgres-meta",
     "db:stop": "supabase stop",

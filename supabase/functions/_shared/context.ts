@@ -4,10 +4,18 @@ import type { Db, UserRow } from "./db.ts";
 
 export type BotContext = Context & { db: Db; user: UserRow };
 
-/** Edits the message a button was tapped on. Ignores Telegram's "message is not modified". */
-export async function editFromButton(ctx: BotContext, text: string, keyboard?: InlineKeyboard) {
+/**
+ * Edits the message a button was tapped on. Ignores Telegram's "message is not modified".
+ * Pass `html: true` for messages whose wording is HTML (see messages.ts).
+ */
+export async function editFromButton(
+  ctx: BotContext,
+  text: string,
+  keyboard?: InlineKeyboard,
+  opts: { html?: boolean } = {},
+) {
   try {
-    await ctx.editMessageText(text, { reply_markup: keyboard });
+    await ctx.editMessageText(text, { reply_markup: keyboard, parse_mode: opts.html ? "HTML" : undefined });
   } catch (err) {
     if (err instanceof GrammyError && err.description.includes("message is not modified")) return;
     throw err;

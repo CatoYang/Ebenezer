@@ -3,7 +3,19 @@
 import type { UserRow } from "./db.ts";
 
 /** Display name. The only place it appears in code, so a rename is one line. */
-export const APP_NAME = "Prayer Echo";
+export const APP_NAME = "Ebenezer";
+
+/** The verse the app is named after, shown at the top of the welcome message. */
+export const SCRIPTURE = {
+  text: "Then Samuel took a stone and set it up between Mizpah and Shen and called its name Ebenezer; " +
+    "for he said, “Till now the LORD has helped us.”",
+  reference: "1 Samuel 7:12 (ESV)",
+};
+
+/** Escapes user-supplied text for messages sent with parse_mode "HTML". */
+export function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 
 /** "21:00" or "21:00:00" → "9:00 pm" */
 export function formatTime(time: string): string {
@@ -14,9 +26,11 @@ export function formatTime(time: string): string {
 }
 
 export const msg = {
+  /** HTML: send with parse_mode "HTML". */
   welcome: (name: string | null) =>
-    `Hi${name ? ` ${name}` : ""}. I'm ${APP_NAME}. I help you keep track of what you're praying ` +
-    `for, check back in on it later, and remind you to pray.\n\n` +
+    `<blockquote>${SCRIPTURE.text}\n— ${SCRIPTURE.reference}</blockquote>\n\n` +
+    `Hi${name ? ` ${escapeHtml(name)}` : ""}. I'm ${APP_NAME}. Like Samuel's stone, I'm here to help you ` +
+    `remember: what you've prayed for, how God has answered, and to keep praying.\n\n` +
     `What I store: your Telegram name and ID, the prayer requests you send me, and when you pray. ` +
     `Only you can see them. Nothing is shared with anyone else.\n\n` +
     `For the people you pray for, please use a first name or initials.\n\n` +
