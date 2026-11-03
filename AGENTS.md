@@ -123,6 +123,8 @@ SQL functions (all state changes are single calls, guarded by user id and status
   unknown timezone). Both the bot and the api change settings only through this.
 - `prayer_streaks`, `journey` (JSON for the Journey screen)
 - `claim_due_follow_ups`, `claim_due_weekly_summaries` (takes `p_now` for tests), `claim_due_nudges`
+- `prune_cron_history(p_now)`: daily cron job; trims pg_cron's run log to 7 days of successes and 90 days
+  of everything else
 
 Do time-zone maths and date formatting in SQL (`at time zone`, `format_local`), not in JS. Every
 migration must end by revoking function `execute` from `public, anon, authenticated`.

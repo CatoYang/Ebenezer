@@ -79,6 +79,10 @@ select
   (select count(*) from prayer_logs where prayed_at > now() - interval '7 days') as prayers_last_7_days;
 ```
 
+**How far back the timer's history goes:** a daily job (`prune-cron-history`) keeps 7 days of successful
+runs and 90 days of failed ones, so the first check above only shows the last week of normal runs. To see
+recent problems, add `and status <> 'succeeded'` to it.
+
 **Logs:** dashboard → Edge Functions → pick a function → Logs. They contain errors only, never message
 text or prayer content (by design: see AGENTS.md).
 
