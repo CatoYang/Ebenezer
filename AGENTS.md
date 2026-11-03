@@ -62,7 +62,7 @@ supabase/
     api/                       Mini App API: index.ts (auth, CORS) + routes.ts (endpoints)
     _shared/telegram_auth.ts   verifyInitData (HMAC with the bot token, 24 h max age)
 miniapp/                       npm workspace: React 18 + Vite + @telegram-apps/telegram-ui
-  src/App.tsx                  status + navigation (tabs: Praying for, Stones; detail screens)
+  src/App.tsx                  status + navigation (tabs: Intentions = PrayingFor.tsx, Answered = Stones.tsx; detail screens)
   src/screens/                 PrayingFor, AddRequest, RequestDetail, AnswerRequest, Stones (+ StoneNote),
                                Journey, Settings
   src/calendar.ts              Journey calendar grid (pure; tested with Deno in calendar_test.ts)

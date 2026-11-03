@@ -13,13 +13,16 @@ a record of answered prayers. It lives inside Telegram, so there's nothing to in
 3. Choose a **reminder time** that suits you. Check-ins and reminders arrive at this time.
 4. Choose whether you'd like a **daily reminder** to pray.
 
-Ebenezer then shows a short guide to its commands, with an **Open Ebenezer** button for the app; send
-`/help` to see it again. Ebenezer works the same on your phone, tablet and computer, as long as it's the same
-Telegram account.
+Ebenezer then shows a short guide. **The app is the easiest way to use Ebenezer:** tap **Open Ebenezer**
+under the guide, or **Open** next to the message box. Commands work too (see [Commands](#commands));
+send `/help` to see the guide again. Ebenezer works the same on your phone, tablet and computer, as long as
+it's the same Telegram account.
 
-## Adding something to pray for
+## Adding an intention
 
-Send `/pray` followed by who or what, and optionally a few details after a dash:
+An intention is someone or something you're praying for. In the app, tap **Add an intention**: who or what you're praying for, optional details, and when to check in.
+
+Or send `/pray` followed by who or what, and optionally a few details after a dash:
 
 ```
 /pray Sarah – surgery on Friday
@@ -40,7 +43,7 @@ On the day you chose, at your reminder time, Ebenezer asks how it's going:
 
 | Button | What happens |
 | --- | --- |
-| **Answered** | Marked as answered. You can write a sentence about how; it's kept with your Stones. |
+| **Answered** | Marked as answered. You can write a sentence about how; it's kept in the app's **Answered** tab. |
 | **Still praying** | Counts as a prayer, and Ebenezer checks in again after the same interval. |
 | **Ask me tomorrow** | Asks again tomorrow at your reminder time. |
 | **Stop following up** | No more check-ins. It's not counted as answered. |
@@ -51,9 +54,9 @@ If you don't tap anything, the message waits for you; its buttons keep working.
 
 - Send `/prayed` any time.
 - Or tap **Yes, I prayed** on the daily reminder.
-- Or open a request in the app and tap **I prayed for this**.
+- Or open an intention in the app and tap **I prayed for this**.
 
-Adding a new request also counts as praying that day.
+Adding a new intention also counts as praying that day.
 
 ## Daily reminder and weekly summary
 
@@ -70,8 +73,8 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 
 | Tab | What's there |
 | --- | --- |
-| **Praying for** | Your requests. Tap one to edit it, record a prayer, change how often Ebenezer checks in, mark it answered, or stop. **Add a prayer request** suggests names you've prayed for before. |
-| **Stones** | Your answered prayers and notes, newest first. Tap one to edit its note. |
+| **Intentions** | What you're praying for. Tap one to edit it, record a prayer, change how often Ebenezer checks in, mark it answered, or stop. **Add an intention** suggests names you've prayed for before. |
+| **Answered** | Your answered prayers and notes, newest first: your stones of remembrance. Tap one to edit its note. |
 | **Journey** | This week's prayer days, your current and best streak, and a calendar of the last 13 weeks. |
 | **Settings** | Reminder time, daily reminder, weekly summary, and timezone (if you travel, it offers your phone's). |
 
@@ -79,9 +82,9 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 
 | Command | What it does |
 | --- | --- |
-| `/pray` | Add something to pray for |
-| `/list` | What you're praying for |
 | `/app` | Open the app |
+| `/pray` | Add an intention |
+| `/list` | What you're praying for |
 | `/prayed` | Record that you prayed |
 | `/settings` | Reminder time, daily reminder, weekly summary |
 | `/help` | How to use Ebenezer (the guide you see after signing up) |
@@ -89,9 +92,9 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 
 ## Your privacy
 
-- Ebenezer stores your Telegram name and ID, your prayer requests and notes, and when you pray.
+- Ebenezer stores your Telegram name and ID, the intentions and notes you add, and when you pray.
 - **Only you can see them.** Nothing is shared with anyone else.
 - `/deletemydata` permanently deletes all of it. You can start again any time with `/start`.
 - If you block the bot, Ebenezer stops sending you messages.
 
-Questions about your data: see the contact in the bot's welcome message.
+Questions about your data: contact the parish at `@davidwoon` on Telegram or +65 9022 2439.

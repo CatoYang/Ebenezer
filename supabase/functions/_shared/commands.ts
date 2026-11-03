@@ -3,10 +3,11 @@
 
 import { APP_NAME } from "./messages.ts";
 
+// The app comes first: it's the main way to use the bot.
 export const COMMANDS = [
-  { command: "pray", description: "Add something to pray for" },
-  { command: "list", description: "What you're praying for" },
   { command: "app", description: "Open the app" },
+  { command: "pray", description: "Add an intention" },
+  { command: "list", description: "What you're praying for" },
   { command: "prayed", description: "Record that you prayed" },
   { command: "settings", description: "Reminder time, daily reminder, weekly summary" },
   { command: "help", description: `How to use ${APP_NAME}` },

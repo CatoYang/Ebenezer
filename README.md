@@ -21,11 +21,11 @@ and no account to create.
 
 | | |
 | --- | --- |
-| **Prayer requests** | `/pray Sarah – surgery on Friday` saves a request and asks when to check in (3 days to 1 month). |
+| **Mini App** | The main way in, inside Telegram: add and manage intentions, look back on *Answered* prayers (your stones of remembrance), see your *Journey* (streaks and a calendar), change *Settings*. |
+| **Intentions** | In the app, or `/pray Sarah – surgery on Friday`: saves an intention and asks when to check in (3 days to 1 month). |
 | **Follow-ups** | On the check-in day: *Answered* (with a note), *Still praying*, *Ask me tomorrow* or *Stop following up*. |
 | **Daily reminder** | "Have you had a moment to pray today?" at your chosen time; skipped on days you've already prayed. |
 | **Weekly summary** | Mondays: days prayed, streak, prayers answered. |
-| **Mini App** | Inside Telegram: manage requests, browse answered prayers (*Stones*), see your *Journey* (streaks and a calendar), change *Settings*. |
 | **Privacy** | Each person sees only their own data. Nothing is shared with anyone. `/deletemydata` removes everything. |
 
 ## How it works
@@ -92,5 +92,4 @@ assets/                logo (logo.svg is the editable source; logo.png is 640×6
 ## Status
 
 Phases 1 (bot) and 2 (Mini App) are built and running on a development project, with friendly testing
-next. Before real users: fill in the data protection contact, then move to church-owned accounts and a
-production project. See [PLAN.md](docs/PLAN.md).
+next. Before real users: move to church-owned accounts and a production project. See [PLAN.md](docs/PLAN.md).

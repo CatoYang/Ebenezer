@@ -4,14 +4,14 @@ import { useMainButton } from "../telegram";
 import { times } from "../text";
 
 export function PrayingFor(props: { requests: PrayerRequest[]; onOpen: (id: string) => void; onAdd: () => void }) {
-  useMainButton({ text: "Add a prayer request", onClick: props.onAdd });
+  useMainButton({ text: "Add an intention", onClick: props.onAdd });
 
   if (props.requests.length === 0) {
     return (
       <Placeholder
-        header="Nothing here yet"
-        description="Add someone or something you're praying for. I'll check in with you about it."
-        action={<Button size="m" onClick={props.onAdd}>Add a prayer request</Button>}
+        header="Your intentions"
+        description="Add the people and things you're praying for. I'll check in with you about each one."
+        action={<Button size="m" onClick={props.onAdd}>Add an intention</Button>}
       />
     );
   }

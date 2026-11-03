@@ -58,7 +58,7 @@ export function Settings() {
     <List>
       <Section
         header="Reminders"
-        footer="Follow-ups on your prayer requests arrive at your reminder time too. The daily reminder is skipped on days you've already prayed."
+        footer="Check-ins on your intentions arrive at your reminder time too. The daily reminder is skipped on days you've already prayed."
       >
         <Cell
           after={

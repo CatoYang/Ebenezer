@@ -16,8 +16,8 @@ export function Stones(props: { stones: Stone[]; onOpen: (id: string) => void })
       <List>
         {verse}
         <Placeholder
-          header="Your stones will be kept here"
-          description="When a prayer is answered, mark it as answered and it's kept here as a reminder of how God has helped you."
+          header="Answered prayers are kept here"
+          description="When an intention is answered, mark it as answered. Like Samuel's stone, it stays here to remind you how God has helped you."
         />
       </List>
     );

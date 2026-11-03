@@ -13,10 +13,10 @@ export const SCRIPTURE = {
 };
 
 /**
- * Who to contact about personal data, shown in the privacy notice. Singapore's PDPA requires a Data
- * Protection Officer contact. PLACEHOLDER: replace with the parish DPO's name/email before real users.
+ * The parish's contact for questions about personal data, shown in the privacy notice (Singapore's PDPA
+ * requires a data protection contact).
  */
-export const DATA_CONTACT = "[parish data protection contact — to be added]";
+export const DATA_CONTACT = "@davidwoon on Telegram or +65 9022 2439";
 
 /** Escapes user-supplied text for messages sent with parse_mode "HTML". */
 export function escapeHtml(text: string): string {
@@ -60,30 +60,40 @@ function reminderSentence(user: Pick<UserRow, "reminder_time" | "nudges_enabled"
   if (!user.reminder_time) return "Choose a reminder time with /settings.";
   const time = formatTime(user.reminder_time);
   return user.nudges_enabled
-    ? `I'll remind you to pray daily at ${time}, and check in on your requests then too.`
-    : `I'll check in on your requests at ${time}. Daily reminders are off.`;
+    ? `I'll remind you to pray daily at ${time}, and check in on your intentions then too.`
+    : `I'll check in on your intentions at ${time}. Daily reminders are off.`;
 }
 
-/** How to use the bot. Every command in COMMANDS (bot.ts) must appear here; a test checks it. */
+/**
+ * How to use the bot. The app comes first, because it's the easiest way in; commands are the
+ * alternative. Every command in COMMANDS (commands.ts) must appear here; a test checks it.
+ */
 function guide(hasApp: boolean): string {
-  const app = hasApp
-    ? `The app: tap Open next to the message box, the button below, or send /app. It's the easiest ` +
-      `way to manage your requests, look back on answered prayers (Stones), see your journey and ` +
-      `change settings.`
-    : `/app — open the app (coming soon)`;
-  return [
-    `How to use ${APP_NAME}:`,
-    "",
-    "/pray — add something to pray for, e.g. /pray Sarah – surgery on Friday",
+  const commands = [
+    "/pray — add an intention, e.g. /pray Sarah – surgery on Friday",
     "/list — what you're praying for",
     "/prayed — record that you prayed today",
     "/settings — reminder time, daily reminder, weekly summary",
+    hasApp ? "/app — open the app" : "/app — open the app (coming soon)",
     "/help — show this again",
     "/deletemydata — delete everything I've stored",
+  ];
+  const checkIns = "When I check in about an intention, just tap a button to reply.";
+  if (!hasApp) return [`How to use ${APP_NAME}:`, "", ...commands, "", checkIns].join("\n");
+  return [
+    `The easiest way to use ${APP_NAME} is the app: tap ${label.openApp} below, or Open next to the ` +
+    `message box.`,
     "",
-    "When I check in about a request, just tap a button to reply.",
+    "In the app you can:",
+    "• add your intentions: the people and things you're praying for",
+    "• mark intentions as answered and keep them as stones of remembrance",
+    "• see your prayer journey",
+    "• change your reminder time and settings",
     "",
-    app,
+    checkIns,
+    "",
+    "Prefer typing? These commands work too:",
+    ...commands,
   ].join("\n");
 }
 
@@ -93,18 +103,17 @@ export const msg = {
     `<blockquote>${SCRIPTURE.text}\n— ${SCRIPTURE.reference}</blockquote>\n\n` +
     `Hi${name ? ` ${escapeHtml(name)}` : ""}. I'm ${APP_NAME}. Like Samuel's stone, I'm here to help you ` +
     `remember: what you've prayed for, how God has answered, and to keep praying.\n\n` +
-    `What I store: your Telegram name and ID, the prayer requests you send me, and when you pray. ` +
+    `What I store: your Telegram name and ID, the intentions you add, and when you pray. ` +
     `Only you can see them. Nothing is shared with anyone else.\n\n` +
     `For the people you pray for, please use a first name or initials.\n\n` +
     `You can delete everything at any time with /deletemydata. ` +
-    `Questions about your data? Contact ${escapeHtml(DATA_CONTACT)}.\n\n` +
+    `Questions about your data? Contact the parish: ${escapeHtml(DATA_CONTACT)}.\n\n` +
     `Is that ok?`,
   consentDeclined:
     "No problem. I've deleted the little I had (your Telegram name and ID). Send /start if you change your mind.",
   needsStart: "Please tap /start first so I can set you up.",
 
-  askTime:
-    "What time of day suits you for reminders? Follow-ups on your prayer requests will arrive then too.",
+  askTime: "What time of day suits you for reminders? I'll check in on your intentions then too.",
   askHour: "Pick a time:",
   askNudges: (time: string) =>
     `Got it: ${formatTime(time)}.\n\nWould you also like a short daily reminder to pray at that time?`,
@@ -141,7 +150,7 @@ export const msg = {
     if (s.active_requests > 0) {
       lines.push(
         "",
-        `Still praying for ${s.active_requests} ${s.active_requests === 1 ? "request" : "requests"}.`,
+        `Still on your list: ${s.active_requests} ${s.active_requests === 1 ? "intention" : "intentions"}.`,
       );
     }
     return lines.join("\n");
@@ -163,7 +172,7 @@ export const msg = {
     `Added: ${describeRequest(title, details)}.\n\nI'll check in with you on ${dueLabel}.`,
   requestUnscheduled: (title: string, details: string | null) =>
     `Added: ${describeRequest(title, details)}.\n\nI won't check in on this one. You'll find it in /list.`,
-  requestInactive: "That prayer request is no longer active.",
+  requestInactive: "That intention is no longer active.",
 
   followUp: (title: string, details: string | null, since: string, prayerCount: number) =>
     `Checking in on ${describeRequest(title, details)}.\n\n` +
@@ -208,12 +217,11 @@ export const msg = {
   openApp: `Open the app to see and manage what you're praying for, and to look back on answered prayers.`,
   appUnavailable: "The app isn't available yet. For now, use /list and /pray.",
 
-  deleteConfirm:
-    "This permanently deletes your prayer requests, prayer history and settings. It can't be undone.",
+  deleteConfirm: "This permanently deletes your intentions, prayer history and settings. It can't be undone.",
   deleted: "Done. Everything I stored about you has been deleted. Send /start if you'd like to begin again.",
   deleteCancelled: "Cancelled. Nothing was deleted.",
 
-  fallback: "I didn't catch that. To add something to pray for, send /pray followed by it, e.g. " +
+  fallback: "I didn't catch that. To add an intention, open the app or send /pray followed by it, e.g. " +
     "/pray Sarah – surgery on Friday. Send /help to see everything I can do.",
   staleButton: "That button has expired.",
 } as const;

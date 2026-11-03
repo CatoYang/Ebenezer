@@ -13,8 +13,8 @@ import { inTelegram, platform, tg } from "./telegram";
 type Tab = "praying" | "stones" | "journey" | "settings";
 
 const TABS: { id: Tab; text: string; icon: string }[] = [
-  { id: "praying", text: "Praying for", icon: "✦" },
-  { id: "stones", text: "Stones", icon: "◆" },
+  { id: "praying", text: "Intentions", icon: "✦" },
+  { id: "stones", text: "Answered", icon: "◆" },
   { id: "journey", text: "Journey", icon: "▦" },
   { id: "settings", text: "Settings", icon: "⚙" },
 ];
@@ -148,7 +148,7 @@ function StatusMessage(props: { status: Status; onRetry: () => void }) {
       return (
         <Placeholder
           header="Something went wrong"
-          description="Couldn't load your prayers. Check your connection and try again."
+          description="Couldn't load your intentions. Check your connection and try again."
           action={<button className="link-button" onClick={props.onRetry}>Try again</button>}
         />
       );

@@ -42,7 +42,7 @@ Always run `npm run check` and `npm test` first (local Docker stack: `npm run db
 | **Bot commands list** | `COMMANDS` in `supabase/functions/_shared/commands.ts`, and the guide in `messages.ts` (a test checks they match) → deploy → `npm run cloud:dev:webhook` |
 | **App name** | `APP_NAME` in `messages.ts`; the Mini App's `<title>` (`miniapp/index.html`) and the "opens from its bot" message in `miniapp/src/App.tsx`; BotFather `/setname` |
 | **Scripture verse** | `SCRIPTURE` in `messages.ts` and `VERSE` in `miniapp/src/text.ts`. Use wording confirmed against the parish's Bible. |
-| **Data protection contact** | `DATA_CONTACT` in `messages.ts` (still a placeholder: must be filled in before real users) |
+| **Data protection contact** | `DATA_CONTACT` in `messages.ts` (also in USER_GUIDE.md) |
 
 After deploying, send `/start` (or any command) to the bot and open the app to check.
 
@@ -168,7 +168,7 @@ and the password manager to the people who need it.
 
 Not done yet. The order, when the church accounts exist (details in SETUP.md):
 
-1. Fill in `DATA_CONTACT` (the parish's data protection contact) and redeploy.
+1. Check `DATA_CONTACT` (the parish's data protection contact) is still current.
 2. Church Supabase organisation → project `ebenezer-prod` in Singapore, on the **Pro** plan.
 3. Add `cloud:prod:*` scripts (copies of `cloud:dev:*` reading `.env.prod`), then push migrations, set
    secrets and deploy functions to prod. Set the Vault secrets for the cron job.

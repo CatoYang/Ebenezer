@@ -48,16 +48,17 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
 - [x] Follow-up sending in `scheduler-tick` (`claim_due_follow_ups`, `FOR UPDATE SKIP LOCKED`)
 - [x] Follow-up buttons: Answered (optional note) / Still praying / Ask me tomorrow / Stop following up
 - [x] `/list`: active requests, prayer count, next check-in, answered count
-- [x] Data contact line in the privacy notice (placeholder text in `DATA_CONTACT`, `messages.ts`)
-- [ ] Fill in `DATA_CONTACT` with the parish Data Protection Officer's contact (PDPA). Needed before real users.
+- [x] Data contact line in the privacy notice (`DATA_CONTACT`, `messages.ts`)
+- [x] Fill in `DATA_CONTACT` with the parish's data protection contact (PDPA)
+- [x] Guide puts the app first; commands are the alternative
 - [ ] Test with 2–3 friendly users for a week
 
 ### Phase 2 — My journey (Mini App, hosted on GitHub Pages)
 - [x] `api` Edge Function: verifies Telegram `initData` on every request; all data scoped to that user
 - [x] App shell (React 18 + Telegram UI kit), opened from the bot's Open menu button, `/app` and `/list`
-- [x] **Praying for**: list; add (suggests names prayed for before; no phone contacts); edit; "I prayed for this";
+- [x] **Intentions** tab: list; add (suggests names prayed for before; no phone contacts); edit; "I prayed for this";
       change check-in interval; mark answered with a note; stop praying for it
-- [x] **Stones**: answered prayers with notes, newest first; edit a note
+- [x] **Answered** tab (the user's stones of remembrance): answered prayers with notes, newest first; edit a note
 - [x] GitHub Pages deploy on push; local development inside Telegram via a Cloudflare tunnel
 - [x] **Journey**: this week's days, current and best streak (counted in the user's timezone; still counts
       from yesterday until today ends), totals, 13-week calendar of days prayed

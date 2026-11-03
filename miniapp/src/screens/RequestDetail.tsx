@@ -47,7 +47,7 @@ export function RequestDetail(props: {
 
   return (
     <List>
-      <Section header="Prayer request" footer={`Praying since ${r.since_label} · prayed ${times(r.prayer_count)}`}>
+      <Section header="Intention" footer={`Praying since ${r.since_label} · prayed ${times(r.prayer_count)}`}>
         <Input value={title} maxLength={LIMITS.title} onChange={(e) => setTitle(e.target.value)} />
         <Textarea
           placeholder="Details (optional)"

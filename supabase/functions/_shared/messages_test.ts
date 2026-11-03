@@ -22,7 +22,7 @@ Deno.test("formatTime uses 12-hour clock", () => {
 });
 
 Deno.test("welcome names the data protection contact", () => {
-  assertStringIncludes(msg.welcome("Yang"), `Contact ${escapeHtml(DATA_CONTACT)}.`);
+  assertStringIncludes(msg.welcome("Yang"), `Contact the parish: ${escapeHtml(DATA_CONTACT)}.`);
 });
 
 Deno.test("weekly summary: active week", () => {
@@ -36,7 +36,7 @@ Deno.test("weekly summary: active week", () => {
   assertEquals(
     text,
     "Your week, 2 Nov – 8 Nov\n\nYou prayed on 5 of 7 days. Current streak: 3 days.\n\n" +
-      "Answered: Sarah, Dad. Thanks be to God!\n\nStill praying for 1 request.",
+      "Answered: Sarah, Dad. Thanks be to God!\n\nStill on your list: 1 intention.",
   );
 });
 
@@ -61,16 +61,18 @@ Deno.test("the guide lists every command in the bot's menu", () => {
   }
 });
 
-Deno.test("onboarding explains the reminder and how to open the app", () => {
+Deno.test("onboarding explains the reminder and puts the app first", () => {
   const text = msg.onboardingDone({ reminder_time: "21:00:00", nudges_enabled: true }, true);
   assertStringIncludes(text, "I'll remind you to pray daily at 9:00 pm");
-  assertStringIncludes(text, "tap Open next to the message box");
+  const guide = text.split("\n\n").slice(1).join("\n\n");
+  assertEquals(guide.startsWith("The easiest way to use Ebenezer is the app: tap Open Ebenezer below"), true);
+  assertEquals(guide.indexOf("/pray") > guide.indexOf("Prefer typing?"), true, "commands come after the app");
   const off = msg.welcomeBack(
     { first_name: "Yang", reminder_time: "07:00:00", nudges_enabled: false },
     false,
   );
   assertStringIncludes(
     off,
-    "Welcome back, Yang. I'll check in on your requests at 7:00 am. Daily reminders are off.",
+    "Welcome back, Yang. I'll check in on your intentions at 7:00 am. Daily reminders are off.",
   );
 });
