@@ -87,7 +87,7 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 | --- | --- |
 | **Intentions** | What you're praying for. Tap one to edit it, record a prayer, change how often Ebenezer checks in, mark it answered, or stop. **Add an intention** suggests names you've prayed for before. |
 | **Answered** | Your answered prayers and notes, newest first: your stones of remembrance. Tap one to edit its note. |
-| **Journey** | Prayer: this week's days, your current and best streak, and a calendar of the last 13 weeks. Bible study: this week's days, streak, total time and recent sessions, plus **Log Bible study**. |
+| **Journey** | At the top, Bible study: this week's days, streak, total time and your last five sessions, plus **Log Bible study**. Below, prayer: this week's days, your current and best streak, and a calendar of the last 13 weeks. |
 | **Settings** | Reminder time, daily reminder, weekly summary, and timezone (if you travel, it offers your phone's). |
 
 ## Commands

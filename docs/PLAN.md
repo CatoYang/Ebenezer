@@ -78,8 +78,8 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
       prayer stats and the daily nudge are unchanged
 - [x] Bot: `/studied` → 15 min … 2 hours buttons → "What did you read?" (reply or Skip);
       `/studied 30 John 3` in one go. A double tap on a length logs once.
-- [x] App: **Log Bible study** on the Journey tab (presets or typed minutes, optional note); Journey shows
-      this week's study days, streak, days, total time and recent sessions (tap to edit or delete)
+- [x] App: **Log Bible study** on the Journey tab (presets or typed minutes, optional note); Journey shows,
+      at the top, this week's study days, streak, days, total time and the last 5 sessions (tap to edit or delete)
 - [x] Weekly summary: Bible study days and time; recent study counts as activity
 - No reminders for Bible study (decided 2026-11-03).
 - Later: suggested reading plans, probably tied to the week's Mass readings. Not designed yet.

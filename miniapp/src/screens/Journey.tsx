@@ -6,6 +6,8 @@ import { useMainButton } from "../telegram";
 import { formatMinutes } from "../text";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+/** Recent sessions shown at the top of Journey; few enough that the prayer stats stay close. */
+const RECENT_STUDY = 5;
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 export function Journey(props: { onLogStudy: (session?: StudySession) => void }) {
@@ -27,6 +29,40 @@ export function Journey(props: { onLogStudy: (session?: StudySession) => void })
 
   return (
     <List>
+      <Section
+        header="Bible study this week"
+        footer={study.minutes_this_week > 0
+          ? `You've studied on ${study.days_this_week} of 7 days this week, ${
+            formatMinutes(study.minutes_this_week)
+          } in all.`
+          : "Nothing logged yet this week. Tap Log Bible study below after you've read."}
+      >
+        <WeekDots week={studyWeek} />
+      </Section>
+
+      <Section>
+        <Cell after={plural(study.current_streak, "day")}>Current streak</Cell>
+        <Cell after={plural(study.best_streak, "day")}>Best streak</Cell>
+        <Cell after={study.total_days}>Days studied</Cell>
+        <Cell after={formatMinutes(study.total_minutes)}>Total time</Cell>
+      </Section>
+
+      {study.recent.length > 0 && (
+        <Section header="Recent Bible study" footer="Tap one to change or delete it.">
+          {study.recent.slice(0, RECENT_STUDY).map((s) => (
+            <Cell
+              key={s.id}
+              multiline
+              subtitle={s.note}
+              after={formatMinutes(s.minutes)}
+              onClick={() => props.onLogStudy(s)}
+            >
+              {s.label}
+            </Cell>
+          ))}
+        </Section>
+      )}
+
       <Section header="Prayer this week" footer={`You've prayed on ${data.days_this_week} of 7 days this week.`}>
         <WeekDots week={weeks[weeks.length - 1]} />
       </Section>
@@ -61,40 +97,6 @@ export function Journey(props: { onLogStudy: (session?: StudySession) => void })
           ))}
         </div>
       </Section>
-
-      <Section
-        header="Bible study this week"
-        footer={study.minutes_this_week > 0
-          ? `You've studied on ${study.days_this_week} of 7 days this week, ${
-            formatMinutes(study.minutes_this_week)
-          } in all.`
-          : "Nothing logged yet this week. Tap Log Bible study below after you've read."}
-      >
-        <WeekDots week={studyWeek} />
-      </Section>
-
-      <Section>
-        <Cell after={plural(study.current_streak, "day")}>Current streak</Cell>
-        <Cell after={plural(study.best_streak, "day")}>Best streak</Cell>
-        <Cell after={study.total_days}>Days studied</Cell>
-        <Cell after={formatMinutes(study.total_minutes)}>Total time</Cell>
-      </Section>
-
-      {study.recent.length > 0 && (
-        <Section header="Recent Bible study" footer="Tap one to change or delete it.">
-          {study.recent.map((s) => (
-            <Cell
-              key={s.id}
-              multiline
-              subtitle={s.note}
-              after={formatMinutes(s.minutes)}
-              onClick={() => props.onLogStudy(s)}
-            >
-              {s.label}
-            </Cell>
-          ))}
-        </Section>
-      )}
     </List>
   );
 }
