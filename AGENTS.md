@@ -60,7 +60,8 @@ supabase/
       study.ts                 parseStudy: "30 John 3" → minutes + note; study limits and button minutes
       context.ts db.ts env.ts telegram.ts
     telegram-bot/index.ts      webhook entry
-    scheduler-tick/            cron entry + follow_ups.ts + weekly_summaries.ts + nudges.ts
+    scheduler-tick/            cron entry + follow_ups.ts + weekly_summaries.ts + nudges.ts + storage.ts
+                               (warns the maintainer at 80% of DB_QUOTA_MB)
     api/                       Mini App API: index.ts (auth, CORS) + routes.ts (endpoints)
     _shared/telegram_auth.ts   verifyInitData (HMAC with the bot token, 24 h max age)
 miniapp/                       npm workspace: React 18 + Vite + @telegram-apps/telegram-ui
@@ -116,6 +117,7 @@ Run `npm run check` and `npm test` before calling work done.
 | `study_logs` | one row per Bible study session: `minutes` 1–600, optional `note`; `source` command/miniapp; unique (`user_id`, `prompt_message_id`) stops a double-tapped length logging twice |
 | `notifications` | scheduled sends (`nudge`: local date; `weekly_digest`: ISO week of the week summarised); unique (`user_id`, `kind`, `period_key`) makes the scheduler idempotent |
 | `processed_updates` | Telegram `update_id`s already handled (pruned after 3 days by cron) |
+| `admin_alerts` | maintainer warnings (`storage`), one per kind per UTC day; not user data |
 
 SQL functions (all state changes are single calls, guarded by user id and status):
 - `follow_up_due_at(user_id, days)`: N local days out, at the user's reminder time
@@ -129,6 +131,8 @@ SQL functions (all state changes are single calls, guarded by user id and status
 - `log_study` (null = already logged from that message), `update_study_log` (null minutes = unchanged),
   `delete_study_log`
 - `claim_due_follow_ups`, `claim_due_weekly_summaries` (takes `p_now` for tests), `claim_due_nudges`
+- `claim_storage_alert(quota_bytes, threshold)`: today's storage warning if the database is at or over the
+  threshold; nothing otherwise
 - `prune_cron_history(p_now)`: daily cron job; trims pg_cron's run log to 7 days of successes and 90 days
   of everything else
 

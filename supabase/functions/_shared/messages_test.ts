@@ -93,6 +93,13 @@ Deno.test("weekly summary: Bible study line, and study alone isn't a quiet week"
   );
 });
 
+Deno.test("storage warning shows MB and percent", () => {
+  assertStringIncludes(
+    msg.storageAlert(412_000_000, 500_000_000),
+    "database is using 412 MB, 82% of its 500 MB quota.",
+  );
+});
+
 Deno.test("formatMinutes", () => {
   assertEquals(formatMinutes(0), "0 min");
   assertEquals(formatMinutes(45), "45 min");

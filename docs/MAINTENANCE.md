@@ -22,7 +22,7 @@ real bot, **@EbenezerStonesBot**, runs against it until a production project exi
 
 | Secret | Kept in | Also in |
 | --- | --- | --- |
-| Bot token, webhook secret, scheduler secret, `MINIAPP_URL` | `supabase/functions/.env` (git-ignored) | Supabase function secrets (`npm run cloud:dev:secrets`) |
+| Bot token, webhook secret, scheduler secret, `MINIAPP_URL`, `ALERT_TELEGRAM_USER_ID`, `DB_QUOTA_MB` | `supabase/functions/.env` (git-ignored) | Supabase function secrets (`npm run cloud:dev:secrets`) |
 | Scheduler URL + secret for Cron | Supabase Vault (`scheduler_url`, `scheduler_secret`) | |
 | Project ref, database password, CLI access token | `.env.dev` (git-ignored) | |
 | All of the above + account logins | The shared password manager | |
@@ -111,6 +111,26 @@ didn't publish; the previous version stays live.
 
 To test reminders without waiting: add a request with a check-in, then `npm run cloud:dev:due`; it arrives
 within 5 minutes.
+
+### Storage warning
+
+The scheduler checks the database size every 5 minutes. At **80% or more** of `DB_QUOTA_MB` (default 500,
+the Free plan's quota; set 8000 on Pro), the bot messages the maintainer (`ALERT_TELEGRAM_USER_ID`, a
+numeric Telegram user ID) at most once a day. Below 80% it sends nothing. Supabase itself only emails the
+organisation's billing address once a quota is already exceeded.
+
+When the warning arrives, find what's big (Supabase → SQL editor):
+
+```sql
+select pg_size_pretty(pg_database_size(current_database())) as total;
+select schemaname || '.' || relname as table_name, pg_size_pretty(pg_total_relation_size(relid)) as size
+from pg_catalog.pg_statio_user_tables order by pg_total_relation_size(relid) desc limit 10;
+```
+
+Then either clear what shouldn't be growing (e.g. `cron.job_run_details`, which `prune-cron-history`
+should keep small), or move to a bigger plan and raise `DB_QUOTA_MB` to match, then
+`npm run cloud:dev:secrets`. To change who gets the warning, set `ALERT_TELEGRAM_USER_ID` the same way;
+that person must have started the bot. Leave it empty to turn the warning off.
 
 ## Rotating secrets
 

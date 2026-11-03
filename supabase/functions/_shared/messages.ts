@@ -258,6 +258,13 @@ export const msg = {
   fallback: "I didn't catch that. To add an intention, open the app or send /pray followed by it, e.g. " +
     "/pray Sarah – surgery on Friday. Send /help to see everything I can do.",
   staleButton: "That button has expired.",
+
+  /** To the maintainer (ALERT_TELEGRAM_USER_ID), not to users. Sizes in bytes; MB = 1,000,000 bytes. */
+  storageAlert: (usedBytes: number, quotaBytes: number) =>
+    `Storage warning: ${APP_NAME}'s database is using ${Math.round(usedBytes / 1e6)} MB, ` +
+    `${Math.round((usedBytes / quotaBytes) * 100)}% of its ${Math.round(quotaBytes / 1e6)} MB quota.\n\n` +
+    `See "Storage warning" in docs/MAINTENANCE.md for what to do. I'll remind you once a day while it stays ` +
+    `above 80%.`,
 } as const;
 
 export const label = {

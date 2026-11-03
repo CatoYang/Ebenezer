@@ -6,6 +6,7 @@ import { createDb } from "../_shared/db.ts";
 import { requireEnv, secretsMatch } from "../_shared/env.ts";
 import { sendDueFollowUps } from "./follow_ups.ts";
 import { sendDueNudges } from "./nudges.ts";
+import { checkStorage } from "./storage.ts";
 import { sendDueWeeklySummaries } from "./weekly_summaries.ts";
 
 const db = createDb();
@@ -20,5 +21,10 @@ Deno.serve(async (req) => {
   const followUps = await sendDueFollowUps(db, api);
   const weeklySummaries = await sendDueWeeklySummaries(db, api); // before Monday's nudge
   const nudges = await sendDueNudges(db, api);
-  return Response.json({ followUps, weeklySummaries, nudges });
+  // Last, and never allowed to fail the tick: it's for the maintainer, not users.
+  const storage = await checkStorage(db, api).catch((err) => {
+    console.error("storage check failed:", err instanceof Error ? err.message : err);
+    return { error: true };
+  });
+  return Response.json({ followUps, weeklySummaries, nudges, storage });
 });
