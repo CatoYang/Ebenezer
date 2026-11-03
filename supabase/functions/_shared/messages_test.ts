@@ -1,6 +1,6 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { COMMANDS } from "./commands.ts";
-import { DATA_CONTACT, escapeHtml, formatTime, msg, SCRIPTURE } from "./messages.ts";
+import { DATA_CONTACT, escapeHtml, formatMinutes, formatTime, msg, SCRIPTURE } from "./messages.ts";
 
 Deno.test("welcome escapes the user's name for HTML", () => {
   const text = msg.welcome("<b>Tom & Jerry</b>");
@@ -32,6 +32,8 @@ Deno.test("weekly summary: active week", () => {
     answered_titles: ["Sarah", "Dad"],
     active_requests: 1,
     current_streak: 3,
+    study_days: 0,
+    study_minutes: 0,
   });
   assertEquals(
     text,
@@ -47,6 +49,8 @@ Deno.test("weekly summary: quiet week is gentle and skips empty lines", () => {
     answered_titles: [],
     active_requests: 0,
     current_streak: 0,
+    study_days: 0,
+    study_minutes: 0,
   });
   assertEquals(
     text,
@@ -75,4 +79,23 @@ Deno.test("onboarding explains the reminder and puts the app first", () => {
     off,
     "Welcome back, Yang. I'll check in on your intentions at 7:00 am. Daily reminders are off.",
   );
+});
+
+Deno.test("weekly summary: Bible study line, and study alone isn't a quiet week", () => {
+  const base = { week_label: "2 Nov – 8 Nov", answered_titles: [], active_requests: 0, current_streak: 0 };
+  assertEquals(
+    msg.weeklySummary({ ...base, days_prayed: 2, study_days: 3, study_minutes: 105 }),
+    "Your week, 2 Nov – 8 Nov\n\nYou prayed on 2 of 7 days.\n\nBible study: 3 days, 1 h 45 min.",
+  );
+  assertEquals(
+    msg.weeklySummary({ ...base, days_prayed: 0, study_days: 1, study_minutes: 30 }),
+    "Your week, 2 Nov – 8 Nov\n\nBible study: 1 day, 30 min.",
+  );
+});
+
+Deno.test("formatMinutes", () => {
+  assertEquals(formatMinutes(0), "0 min");
+  assertEquals(formatMinutes(45), "45 min");
+  assertEquals(formatMinutes(60), "1 h");
+  assertEquals(formatMinutes(105), "1 h 45 min");
 });

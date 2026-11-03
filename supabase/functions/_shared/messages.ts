@@ -40,12 +40,24 @@ const truncate = (text: string, max: number) => (text.length > max ? `${text.sli
 
 const times = (n: number) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
 
+const days = (n: number) => `${n} ${n === 1 ? "day" : "days"}`;
+
+/** 45 → "45 min", 60 → "1 h", 105 → "1 h 45 min". Same as formatMinutes in miniapp/src/text.ts. */
+export function formatMinutes(total: number): string {
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
 export interface WeeklySummary {
   week_label: string;
   days_prayed: number;
   answered_titles: string[];
   active_requests: number;
   current_streak: number;
+  study_days: number;
+  study_minutes: number;
 }
 
 export interface ListedRequest {
@@ -73,6 +85,7 @@ function guide(hasApp: boolean): string {
     "/pray — add an intention, e.g. /pray Sarah – surgery on Friday",
     "/list — what you're praying for",
     "/prayed — record that you prayed today",
+    "/studied — record Bible study, e.g. /studied 30 John 3",
     "/settings — reminder time, daily reminder, weekly summary",
     hasApp ? "/app — open the app" : "/app — open the app (coming soon)",
     "/help — show this again",
@@ -87,7 +100,8 @@ function guide(hasApp: boolean): string {
     "In the app you can:",
     "• add your intentions: the people and things you're praying for",
     "• mark intentions as answered and keep them as stones of remembrance",
-    "• see your prayer journey",
+    "• log your Bible study time",
+    "• see your journey in prayer and Bible study",
     "• change your reminder time and settings",
     "",
     checkIns,
@@ -103,7 +117,8 @@ export const msg = {
     `<blockquote>${SCRIPTURE.text}\n— ${SCRIPTURE.reference}</blockquote>\n\n` +
     `Hi${name ? ` ${escapeHtml(name)}` : ""}. I'm ${APP_NAME}. Like Samuel's stone, I'm here to help you ` +
     `remember: what you've prayed for, how God has answered, and to keep praying.\n\n` +
-    `What I store: your Telegram name and ID, the intentions you add, and when you pray. ` +
+    `What I store: your Telegram name and ID, the intentions you add, when you pray, and your Bible ` +
+    `study times and notes. ` +
     `Only you can see them. Nothing is shared with anyone else.\n\n` +
     `For the people you pray for, please use a first name or initials.\n\n` +
     `You can delete everything at any time with /deletemydata. ` +
@@ -136,13 +151,17 @@ export const msg = {
 
   weeklySummary: (s: WeeklySummary) => {
     const lines = [`Your week, ${s.week_label}`, ""];
-    if (s.days_prayed === 0) {
+    if (s.days_prayed === 0 && s.study_minutes === 0) {
       lines.push("Last week was quiet. A moment of prayer today is a good place to start again.");
-    } else {
+    } else if (s.days_prayed > 0) {
       lines.push(
         `You prayed on ${s.days_prayed} of 7 days.` +
           (s.current_streak > 1 ? ` Current streak: ${s.current_streak} days.` : ""),
       );
+    }
+    if (s.study_minutes > 0) {
+      if (s.days_prayed > 0) lines.push("");
+      lines.push(`Bible study: ${days(s.study_days)}, ${formatMinutes(s.study_minutes)}.`);
     }
     if (s.answered_titles.length > 0) {
       lines.push("", `Answered: ${s.answered_titles.join(", ")}. Thanks be to God!`);
@@ -160,6 +179,19 @@ export const msg = {
   nudgePrayed: "Have you had a moment to pray today?\n\nYes. Logged for today.",
   nudgeNotYet: "Have you had a moment to pray today?\n\nNo worries. Send /prayed when you do.",
   prayedLogged: "Logged. Thanks for taking the time to pray today.",
+
+  askStudy:
+    "How long did you study the Bible today?\n\nFor another length, send /studied and the minutes, e.g. /studied 25",
+  askStudyNote: (minutes: number) =>
+    `Logged ${formatMinutes(minutes)} of Bible study today.\n\n` +
+    `What did you read? A short note is enough, e.g. John 3 or Sunday's readings.`,
+  studyLogged: (minutes: number, note: string | null) =>
+    `Logged ${formatMinutes(minutes)} of Bible study today${note ? `: ${note}` : ""}.`,
+  studyNoteSaved: "Saved.",
+  studyNoteTooLong: "That's a bit long. Please keep the note under 500 characters.",
+  studyInvalid: "Send the minutes first, then an optional note, e.g. /studied 30 John 3. Or send just " +
+    "/studied to pick a length.",
+  studyAlreadyLogged: "Already recorded.",
 
   askRequest:
     "Who or what are you praying for?\n\nYou can add details after a dash, e.g. Sarah – surgery on Friday",
@@ -217,7 +249,9 @@ export const msg = {
   openApp: `Open the app to see and manage what you're praying for, and to look back on answered prayers.`,
   appUnavailable: "The app isn't available yet. For now, use /list and /pray.",
 
-  deleteConfirm: "This permanently deletes your intentions, prayer history and settings. It can't be undone.",
+  deleteConfirm:
+    "This permanently deletes your intentions, your prayer and Bible study history, and your settings. " +
+    "It can't be undone.",
   deleted: "Done. Everything I stored about you has been deleted. Send /start if you'd like to begin again.",
   deleteCancelled: "Cancelled. Nothing was deleted.",
 
@@ -253,6 +287,12 @@ export const label = {
   later: "Ask me tomorrow",
   stop: "Stop following up",
   skip: "Skip",
+  min15: "15 min",
+  min30: "30 min",
+  min45: "45 min",
+  hour1: "1 hour",
+  hour1half: "1½ hours",
+  hours2: "2 hours",
   openApp: `Open ${APP_NAME}`,
   deleteYes: "Delete everything",
   cancel: "Cancel",

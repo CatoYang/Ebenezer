@@ -13,10 +13,14 @@
 //   POST  /requests/:id/close        stop praying for it
 //   GET   /stones                    answered requests
 //   PATCH /stones/:id                { note }
+//   POST  /study                     { minutes, note? }       log a Bible study session
+//   PATCH /study/:id                 { minutes, note? }
+//   POST  /study/:id/delete
 
 import { FOLLOW_UP_DAYS } from "../_shared/callbacks.ts";
 import type { Db, UserRow } from "../_shared/db.ts";
 import { DETAILS_MAX, TITLE_MAX } from "../_shared/requests.ts";
+import { STUDY_NOTE_MAX, validMinutes } from "../_shared/study.ts";
 
 type Result = { status: number; body: unknown };
 type Body = Record<string, unknown>;
@@ -193,6 +197,30 @@ export async function route(
         .eq("id", id).eq("user_id", user.id).eq("status", "answered").select("id");
       if (error) throw error;
       return data.length ? ok() : notFound();
+    }
+  }
+
+  if (resource === "study") {
+    const minutes = validMinutes(body.minutes);
+    const note = text(body.note, STUDY_NOTE_MAX);
+
+    // POST /study
+    if (method === "POST" && !id) {
+      if (minutes === null || note === "invalid") return bad("invalid_study");
+      return ok({ id: await call("log_study", { p_minutes: minutes, p_note: note, p_source: "miniapp" }) });
+    }
+
+    // PATCH /study/:id
+    if (method === "PATCH" && id && !action) {
+      if (minutes === null || note === "invalid") return bad("invalid_study");
+      return (await call("update_study_log", { p_id: id, p_minutes: minutes, p_note: note }))
+        ? ok()
+        : notFound();
+    }
+
+    // POST /study/:id/delete
+    if (method === "POST" && id && action === "delete") {
+      return (await call("delete_study_log", { p_id: id })) ? ok() : notFound();
     }
   }
 

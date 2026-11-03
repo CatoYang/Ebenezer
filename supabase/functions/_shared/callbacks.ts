@@ -1,6 +1,8 @@
 // Inline-button callback data. Telegram limits it to 64 bytes, so actions are short strings.
 // Every button the bot sends is built here and every tap is parsed here, so the two can't drift.
 
+import { STUDY_MINUTES, type StudyMinutes, validMinutes } from "./study.ts";
+
 /** Where a time picker was opened from, so we know what to show after a time is chosen. */
 export type Origin = "onboarding" | "settings";
 
@@ -16,7 +18,9 @@ export type Callback =
   | { kind: "delete"; confirm: boolean }
   | { kind: "interval"; requestId: string; days: FollowUpDays | null } // null = don't check in
   | { kind: "follow_up"; followUpId: string; response: FollowUpResponse }
-  | { kind: "skip_note" };
+  | { kind: "skip_note" }
+  | { kind: "study_minutes"; minutes: StudyMinutes }
+  | { kind: "study_skip"; minutes: number }; // minutes only to reword the message
 
 /** Follow-up intervals offered as buttons. */
 export const FOLLOW_UP_DAYS = [3, 7, 14, 30] as const;
@@ -69,6 +73,10 @@ export function encode(cb: Callback): string {
       return `fu:${cb.followUpId}:${RESPONSE_CODE[cb.response]}`;
     case "skip_note":
       return "note:skip";
+    case "study_minutes":
+      return `study:${cb.minutes}`;
+    case "study_skip":
+      return `study:skip:${cb.minutes}`;
   }
 }
 
@@ -115,6 +123,17 @@ export function parse(data: string): Callback | null {
         : null;
     case "note":
       return a === "skip" ? { kind: "skip_note" } : null;
+    case "study": {
+      if (a === "skip") {
+        const minutes = /^\d{1,3}$/.test(b ?? "") ? validMinutes(Number(b)) : null;
+        return minutes ? { kind: "study_skip", minutes } : null;
+      }
+      const minutes = Number(a);
+      return b === undefined && String(minutes) === a &&
+          (STUDY_MINUTES as readonly number[]).includes(minutes)
+        ? { kind: "study_minutes", minutes: minutes as StudyMinutes }
+        : null;
+    }
     default:
       return null;
   }

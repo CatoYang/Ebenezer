@@ -73,6 +73,17 @@ individual experience works. Nothing in Phases 0–2 assumes groups or leaders.
       prayers answered (by name), active requests, Open button. Only for users with an active request or a
       prayer in the last 4 weeks, who joined before this week. Sent before Monday's daily reminder.
 
+### Phase 2b — Bible study
+- [x] `study_logs`: minutes (1–600) and an optional note per session; separate from `prayer_logs`, so
+      prayer stats and the daily nudge are unchanged
+- [x] Bot: `/studied` → 15 min … 2 hours buttons → "What did you read?" (reply or Skip);
+      `/studied 30 John 3` in one go. A double tap on a length logs once.
+- [x] App: **Log Bible study** on the Journey tab (presets or typed minutes, optional note); Journey shows
+      this week's study days, streak, days, total time and recent sessions (tap to edit or delete)
+- [x] Weekly summary: Bible study days and time; recent study counts as activity
+- No reminders for Bible study (decided 2026-11-03).
+- Later: suggested reading plans, probably tied to the week's Mass readings. Not designed yet.
+
 ### Phase 3 — Connections (to be designed)
 A user can invite someone to shepherd or oversee them. Questions to settle first:
 - Who starts the connection, the individual or the shepherd? Is it one-to-one, or one shepherd with many people?

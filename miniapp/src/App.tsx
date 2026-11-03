@@ -1,9 +1,10 @@
 import { AppRoot, Placeholder, Spinner, Tabbar } from "@telegram-apps/telegram-ui";
 import { useCallback, useEffect, useState } from "react";
-import { api, ApiError, type PrayerRequest, type Stone } from "./api";
+import { api, ApiError, type PrayerRequest, type Stone, type StudySession } from "./api";
 import { AddRequest } from "./screens/AddRequest";
 import { AnswerRequest } from "./screens/AnswerRequest";
 import { Journey } from "./screens/Journey";
+import { LogStudy } from "./screens/LogStudy";
 import { PrayingFor } from "./screens/PrayingFor";
 import { RequestDetail } from "./screens/RequestDetail";
 import { Settings } from "./screens/Settings";
@@ -23,7 +24,8 @@ type Screen =
   | { name: "add" }
   | { name: "request"; id: string }
   | { name: "answer"; id: string }
-  | { name: "stone"; id: string };
+  | { name: "stone"; id: string }
+  | { name: "study"; session?: StudySession };
 
 type Status = "loading" | "ready" | "not_in_telegram" | "not_onboarded" | "error";
 
@@ -97,6 +99,8 @@ export function App() {
     );
   } else if (screen.name === "stone" && findStone(screen.id)) {
     content = <StoneNote stone={findStone(screen.id)!} onBack={toList} onDone={() => load().then(toList)} />;
+  } else if (screen.name === "study") {
+    content = <LogStudy key={screen.session?.id ?? "new"} session={screen.session} onBack={toList} onDone={toList} />;
   } else if (tab === "praying") {
     content = (
       <PrayingFor
@@ -108,7 +112,7 @@ export function App() {
   } else if (tab === "stones") {
     content = <Stones stones={stones} onOpen={(id) => setScreen({ name: "stone", id })} />;
   } else if (tab === "journey") {
-    content = <Journey />;
+    content = <Journey onLogStudy={(session) => setScreen({ name: "study", session })} />;
   } else {
     content = <Settings />;
   }

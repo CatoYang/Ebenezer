@@ -1,6 +1,7 @@
 import { InlineKeyboard } from "grammy";
 import { encode, type FollowUpDays, type Origin } from "./callbacks.ts";
 import { label } from "./messages.ts";
+import type { StudyMinutes } from "./study.ts";
 
 const btn = (text: string, cb: Parameters<typeof encode>[0]) => InlineKeyboard.text(text, encode(cb));
 
@@ -100,3 +101,22 @@ export const openAppKeyboard = (url: string) =>
   InlineKeyboard.from([[InlineKeyboard.webApp(label.openApp, url)]]);
 
 export const skipNoteKeyboard = () => InlineKeyboard.from([[btn(label.skip, { kind: "skip_note" })]]);
+
+const STUDY_LABELS: Record<StudyMinutes, string> = {
+  15: label.min15,
+  30: label.min30,
+  45: label.min45,
+  60: label.hour1,
+  90: label.hour1half,
+  120: label.hours2,
+};
+
+/** "How long did you study the Bible today?" */
+export const studyMinutesKeyboard = () =>
+  InlineKeyboard.from([
+    ([15, 30, 45] as const).map((minutes) => btn(STUDY_LABELS[minutes], { kind: "study_minutes", minutes })),
+    ([60, 90, 120] as const).map((minutes) => btn(STUDY_LABELS[minutes], { kind: "study_minutes", minutes })),
+  ]);
+
+export const studySkipKeyboard = (minutes: number) =>
+  InlineKeyboard.from([[btn(label.skip, { kind: "study_skip", minutes })]]);

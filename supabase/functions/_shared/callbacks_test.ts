@@ -27,6 +27,9 @@ const ALL: Callback[] = [
   { kind: "follow_up", followUpId: ID, response: "later" },
   { kind: "follow_up", followUpId: ID, response: "stop" },
   { kind: "skip_note" },
+  { kind: "study_minutes", minutes: 15 },
+  { kind: "study_minutes", minutes: 120 },
+  { kind: "study_skip", minutes: 25 },
 ];
 
 Deno.test("every callback round-trips and fits Telegram's 64-byte limit", () => {

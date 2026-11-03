@@ -18,6 +18,7 @@ import {
   start,
 } from "./handlers/onboarding.ts";
 import { nudgeReply, prayedCommand } from "./handlers/prayer.ts";
+import { studiedCommand, studyMinutesChosen, studySkip } from "./handlers/study.ts";
 import {
   appCommand,
   followUpReply,
@@ -103,6 +104,7 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
   bot.command("settings", settingsCommand);
   bot.command("help", helpCommand);
   bot.command("prayed", prayedCommand);
+  bot.command("studied", studiedCommand);
   bot.command("deletemydata", deleteCommand);
 
   bot.on("callback_query:data", async (ctx) => {
@@ -149,6 +151,12 @@ export function createBot(token: string, db: Db): Bot<BotContext> {
         break;
       case "skip_note":
         await skipNote(ctx);
+        break;
+      case "study_minutes":
+        toast = await studyMinutesChosen(ctx, cb.minutes);
+        break;
+      case "study_skip":
+        await studySkip(ctx, cb.minutes);
         break;
     }
     await ctx.answerCallbackQuery(toast ? { text: toast } : undefined);

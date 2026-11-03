@@ -13,7 +13,8 @@ export function createDb(): Db {
 /** The one free-text reply the bot is waiting for (users.awaiting). Cleared by the next command. */
 export type Awaiting =
   | { kind: "request_text"; prompt_message_id: number }
-  | { kind: "answer_note"; request_id: string; prompt_message_id: number };
+  | { kind: "answer_note"; request_id: string; prompt_message_id: number }
+  | { kind: "study_note"; study_id: string; prompt_message_id: number };
 
 export interface UserRow {
   id: string;

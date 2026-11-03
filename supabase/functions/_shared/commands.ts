@@ -9,6 +9,7 @@ export const COMMANDS = [
   { command: "pray", description: "Add an intention" },
   { command: "list", description: "What you're praying for" },
   { command: "prayed", description: "Record that you prayed" },
+  { command: "studied", description: "Record Bible study time" },
   { command: "settings", description: "Reminder time, daily reminder, weekly summary" },
   { command: "help", description: `How to use ${APP_NAME}` },
   { command: "deletemydata", description: "Delete everything stored about you" },

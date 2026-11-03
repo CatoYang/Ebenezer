@@ -54,8 +54,10 @@ supabase/
       callbacks.ts             all inline-button callback data (encode/parse, 64-byte limit)
       keyboards.ts             all inline keyboards
       messages.ts              ALL user-facing wording
-      handlers/                onboarding.ts, requests.ts (/pray, /list, follow-ups), prayer.ts, account.ts
+      handlers/                onboarding.ts, requests.ts (/pray, /list, follow-ups), prayer.ts, study.ts
+                               (/studied), account.ts
       requests.ts              parseRequest: "Sarah – surgery" → title + details
+      study.ts                 parseStudy: "30 John 3" → minutes + note; study limits and button minutes
       context.ts db.ts env.ts telegram.ts
     telegram-bot/index.ts      webhook entry
     scheduler-tick/            cron entry + follow_ups.ts + weekly_summaries.ts + nudges.ts
@@ -64,7 +66,7 @@ supabase/
 miniapp/                       npm workspace: React 18 + Vite + @telegram-apps/telegram-ui
   src/App.tsx                  status + navigation (tabs: Intentions = PrayingFor.tsx, Answered = Stones.tsx; detail screens)
   src/screens/                 PrayingFor, AddRequest, RequestDetail, AnswerRequest, Stones (+ StoneNote),
-                               Journey, Settings
+                               Journey (+ LogStudy), Settings
   src/calendar.ts              Journey calendar grid (pure; tested with Deno in calendar_test.ts)
   src/telegram.ts              typed window.Telegram.WebApp, useBackButton, useMainButton, haptics
   src/api.ts  src/config.ts    fetch client (Authorization: tma <initData>); API_URL (VITE_API_URL)
@@ -110,7 +112,8 @@ Run `npm run check` and `npm test` before calling work done.
 | `users` | `telegram_user_id` unique; `timezone` (default `Asia/Singapore`); `reminder_time` (local `time`, null until chosen); `nudges_enabled`; `weekly_summary_enabled`; `privacy_accepted_at`; `awaiting` (jsonb, the one pending free-text prompt); `blocked_at` |
 | `prayer_requests` | `title` (who/what), `details`, `status` active/answered/closed, `follow_up_days`, `answer_note` |
 | `follow_ups` | `due_at`, `status` pending/sent/responded/cancelled, `response`; **unique open follow-up per request** |
-| `prayer_logs` | one row per prayer; `source` command/nudge/request/follow_up/miniapp. Basis for all stats |
+| `prayer_logs` | one row per prayer; `source` command/nudge/request/follow_up/miniapp. Basis for all prayer stats |
+| `study_logs` | one row per Bible study session: `minutes` 1–600, optional `note`; `source` command/miniapp; unique (`user_id`, `prompt_message_id`) stops a double-tapped length logging twice |
 | `notifications` | scheduled sends (`nudge`: local date; `weekly_digest`: ISO week of the week summarised); unique (`user_id`, `kind`, `period_key`) makes the scheduler idempotent |
 | `processed_updates` | Telegram `update_id`s already handled (pruned after 3 days by cron) |
 
@@ -121,7 +124,10 @@ SQL functions (all state changes are single calls, guarded by user id and status
   (answered / still_praying / later / stop; no rows = stale or double tap), `list_active_requests`
 - `update_user_settings` (null = unchanged; moves pending follow-ups to a new time/timezone; 22023 for an
   unknown timezone). Both the bot and the api change settings only through this.
-- `prayer_streaks`, `journey` (JSON for the Journey screen)
+- `day_streaks(days, today)` (shared by `prayer_streaks` and `study_streaks`), `journey` (JSON for the Journey
+  screen, including `study_summary`)
+- `log_study` (null = already logged from that message), `update_study_log` (null minutes = unchanged),
+  `delete_study_log`
 - `claim_due_follow_ups`, `claim_due_weekly_summaries` (takes `p_now` for tests), `claim_due_nudges`
 - `prune_cron_history(p_now)`: daily cron job; trims pg_cron's run log to 7 days of successes and 90 days
   of everything else

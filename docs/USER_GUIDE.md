@@ -58,12 +58,24 @@ If you don't tap anything, the message waits for you; its buttons keep working.
 
 Adding a new intention also counts as praying that day.
 
+## Bible study
+
+Record how long you spent studying the Bible, and optionally what you read:
+
+- In the app: **Journey** tab → **Log Bible study**. Pick or type the minutes, and add a note if you like.
+- Or send `/studied` and tap a length (15 minutes to 2 hours). Ebenezer then asks what you read; reply with
+  a short note or tap **Skip**.
+- Or type it in one go: `/studied 30 John 3` (minutes first, then the note).
+
+The Journey tab shows this week's study days, your streak, total time and recent sessions. Tap a session to
+change or delete it. There are no Bible study reminders.
+
 ## Daily reminder and weekly summary
 
 - **Daily reminder:** *"Have you had a moment to pray today?"* at your reminder time. It's skipped on days
   you've already recorded a prayer.
 - **Weekly summary:** on Mondays at your reminder time, a short look back at the week before: how many
-  days you prayed, your streak, and any prayers answered.
+  days you prayed, your streak, any prayers answered, and your Bible study days and time.
 
 Turn either on or off with `/settings` or in the app.
 
@@ -75,7 +87,7 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 | --- | --- |
 | **Intentions** | What you're praying for. Tap one to edit it, record a prayer, change how often Ebenezer checks in, mark it answered, or stop. **Add an intention** suggests names you've prayed for before. |
 | **Answered** | Your answered prayers and notes, newest first: your stones of remembrance. Tap one to edit its note. |
-| **Journey** | This week's prayer days, your current and best streak, and a calendar of the last 13 weeks. |
+| **Journey** | Prayer: this week's days, your current and best streak, and a calendar of the last 13 weeks. Bible study: this week's days, streak, total time and recent sessions, plus **Log Bible study**. |
 | **Settings** | Reminder time, daily reminder, weekly summary, and timezone (if you travel, it offers your phone's). |
 
 ## Commands
@@ -86,13 +98,15 @@ Tap **Open** next to the message box (or send `/app`). It has four tabs:
 | `/pray` | Add an intention |
 | `/list` | What you're praying for |
 | `/prayed` | Record that you prayed |
+| `/studied` | Record Bible study time, e.g. `/studied 30 John 3` |
 | `/settings` | Reminder time, daily reminder, weekly summary |
 | `/help` | How to use Ebenezer (the guide you see after signing up) |
 | `/deletemydata` | Delete everything Ebenezer has stored about you |
 
 ## Your privacy
 
-- Ebenezer stores your Telegram name and ID, the intentions and notes you add, and when you pray.
+- Ebenezer stores your Telegram name and ID, the intentions and notes you add, when you pray, and your Bible study times
+  and notes.
 - **Only you can see them.** Nothing is shared with anyone else.
 - `/deletemydata` permanently deletes all of it. You can start again any time with `/start`.
 - If you block the bot, Ebenezer stops sending you messages.

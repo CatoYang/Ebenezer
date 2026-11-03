@@ -8,6 +8,7 @@ import { MINIAPP_URL } from "../env.ts";
 import { intervalKeyboard, openAppKeyboard, skipNoteKeyboard } from "../keyboards.ts";
 import { type ListedRequest, msg } from "../messages.ts";
 import { parseRequest } from "../requests.ts";
+import { saveStudyNote } from "./study.ts";
 
 const LIST_LIMIT = 30;
 const NOTE_MAX = 1000;
@@ -45,6 +46,7 @@ export async function textMessage(ctx: BotContext) {
 
   await updateUser(ctx, { awaiting: null });
   if (awaiting.kind === "request_text") await addRequest(ctx, text);
+  else if (awaiting.kind === "study_note") await saveStudyNote(ctx, awaiting, text);
   else await saveAnswerNote(ctx, awaiting, text);
 }
 

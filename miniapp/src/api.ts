@@ -30,6 +30,24 @@ export interface Settings {
   weekly_summary_enabled: boolean;
 }
 
+export interface StudySession {
+  id: string;
+  minutes: number;
+  note: string | null;
+  label: string; // "Tue 10 Nov, 9:00 pm"
+}
+
+export interface StudySummary {
+  days_this_week: number;
+  minutes_this_week: number;
+  current_streak: number;
+  best_streak: number;
+  total_minutes: number;
+  total_days: number;
+  this_week: { date: string; count: number }[]; // count = minutes that day
+  recent: StudySession[];
+}
+
 export interface Journey {
   today: string; // the user's local date, "YYYY-MM-DD"
   days_this_week: number;
@@ -40,6 +58,7 @@ export interface Journey {
   active_requests: number;
   answered_requests: number;
   calendar: { date: string; count: number }[];
+  study: StudySummary;
 }
 
 export class ApiError extends Error {
@@ -75,4 +94,8 @@ export const api = {
   close: (id: string) => request("POST", `/requests/${id}/close`),
   stones: () => request<{ stones: Stone[] }>("GET", "/stones"),
   editStoneNote: (id: string, note: string | null) => request("PATCH", `/stones/${id}`, { note }),
+  logStudy: (minutes: number, note: string | null) => request<{ id: string }>("POST", "/study", { minutes, note }),
+  editStudy: (id: string, minutes: number, note: string | null) =>
+    request("PATCH", `/study/${id}`, { minutes, note }),
+  deleteStudy: (id: string) => request("POST", `/study/${id}/delete`),
 };
